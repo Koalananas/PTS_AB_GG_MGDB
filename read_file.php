@@ -1,8 +1,7 @@
 <?php
+main('5','2'); //start point, end point
 
-treeFromStartEnd('5','2');
-
-function treeFromStartEnd($start, $end){
+function main($start, $end){
     $rawData = readData("Ressources/data_arcs.txt");
     if($rawData == false){return "Error while reading data file";}
 
@@ -12,16 +11,29 @@ function treeFromStartEnd($start, $end){
     $ways = ExtractFromRaw($rawData);
     if($ways == false){return "Error fetching ways";}
 
-    find($ways, $start, $end, array());
+    echo tellWays($ways, $start, $end); //returning all ways(a way is list of path) separated by line-return, the way is composed of numbers paths separated by comma
+    // the parameter 'maxlength of the way' is in the tellWays function
+}
+
+function tellWays($ways, $start, $end){
+    $maxlength = 15; //the maximum length of the way;
+
+    $GLOBALS['ouput'] = "";
+    find($ways, $start, $end, array(), 0, $maxlength);
+    $temp = $GLOBALS['ouput'];
+    unset($GLOBALS['ouput']);
+
+    return $temp;
 
 }
 
-function find($ways, $start, $end, $queue){
-    if(count($queue)>12){
-        //echo 'arrete les conneries';
+function find($ways, $start, $end, $queue, $stp, $maxlength){
+    if(count($queue)>$maxlength){
+        //echo 'queue to long';
+        $queue =array();
     }
     else{
-        if(count($queue)>0){
+        if(count($queue)!=0){
             $actualPoint = $ways[$queue[count($queue)-1]['nuWay']-1][4];
         }
         else{
@@ -32,20 +44,33 @@ function find($ways, $start, $end, $queue){
         $actualPoint  =intval($actualPoint);
         //###################BREAK#############################
         if($actualPoint == $end){ //check if the number of way of the last element of the queue gives to the end 
-            //parcourir la queue et la remplir dans le node
-            //re find dans les child tdu node
-            foreach($queue as $item){
-                echo $item['nuWay'] . " > ";
+            //###################CLEAN QUEUE#############################
+            $continue = true;
+            /*
+                2,3,29,37,32,69,54,11,17,93 (faux) -> 2,37,69,54,17,93 (vrai)
+            */
+            for($i = 0; $i < count($queue); $i++){
+                if($i+1<count($queue)){
+                    $now1 =$queue[$i]['nuWay']-1;
+                    $now2 = $queue[$i+1]['nuWay']-1;
+                    if(intval($ways[$now1][3]) == intval($ways[$now2][3])){
+                        array_splice($queue, $i, 1);
+                        $i = 0;
+                    }
+                }            
             }
-            echo "<br>";
-            $clean =true;
-            //return;
+            $outp = array();
+            foreach($queue as $item){
+                array_push($outp, $item['nuWay']);
+            }
+            $GLOBALS['ouput'] .= implode(",",$outp ). "<br>";
+
         }
         //#############CONTINUE###############################
         else{
             foreach($ways as $w){
                 
-                //print_r($w);echo '<br>';
+                if($stp ==0){$queue=array();}
                 if(intval($w[3]) === intval($actualPoint)){
                     $go = true;
                     foreach($queue as $item){
@@ -58,8 +83,7 @@ function find($ways, $start, $end, $queue){
                         $indexQueue = count($queue);
                         $queue[$indexQueue]['difficulty'] = $w[2]; //useless here
                         $queue[$indexQueue]['nuWay'] = intval($w[0]);
-
-                        find($ways, $start, $end, $queue);
+                        find($ways, $start, $end, $queue, 1, $maxlength);
                     }
                     
                 }
@@ -74,6 +98,7 @@ function readData($path){
     }
     return false;
 }
+
 function ExtractFromRaw($rawData){
     $points = array();
     $nbPoints = fgets($rawData);
