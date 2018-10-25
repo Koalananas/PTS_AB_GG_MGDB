@@ -46,7 +46,7 @@ function find($ways, $start, $end, $queue, $stp, $maxlength){
             //###################CLEAN QUEUE#############################
             $continue = true;
             /*
-                2,3,29,37,32,69,54,11,17,93 (faux) -> 2,37,69,54,17,93 (vrai)
+                2,3,29,37,32,69,54,11,17,93 (wrong) -> 2,37,69,54,17,93 (right)
             */
             for($i = 0; $i < count($queue); $i++){
                 if($i+1<count($queue)){
