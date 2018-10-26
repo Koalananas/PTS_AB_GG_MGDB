@@ -12,9 +12,11 @@ function main($start, $end){
 
     echo tellWays($ways, $start, $end); //returning all ways(a way is list of path) separated by line-return, the way is composed of numbers paths separated by comma
     // the parameter 'maxlength of the way' is in the tellWays function
+
+
 }
 
-function tellWays($ways, $start, $end){
+function tellWays($ways, $start, $end){//return a string of row, each row contains a list of way, each row is a possible path to go from 'start' to 'end'
     $maxlength = 15; //the maximum length of the way;
 
     $GLOBALS['ouput'] = "";
@@ -26,7 +28,7 @@ function tellWays($ways, $start, $end){
 
 }
 
-function find($ways, $start, $end, $queue, $stp, $maxlength){
+function find($ways, $start, $end, $queue, $stp, $maxlength){//function used by tellWays, return recursivly the possible paths to go from 'start' to 'end'
     if(count($queue)>$maxlength){
         //echo 'queue to long';
         $queue =array();
@@ -91,14 +93,14 @@ function find($ways, $start, $end, $queue, $stp, $maxlength){
     }
 }
 
-function readData($path){
+function readData($path){//return a file from the path
     if(file_exists($path)){
         return fopen($path, "r");
     }
     return false;
 }
 
-function ExtractFromRaw($rawData){
+function ExtractFromRaw($rawData){//extract line of a file formated like 'data_arcs.txt'
     $points = array();
     $nbPoints = fgets($rawData);
     for($i = 0; $i< $nbPoints; $i++){
@@ -116,9 +118,49 @@ function ExtractFromRaw($rawData){
     return $points;
 }
 
-function echo_pre($arr){
+function echo_pre($arr){//print an array for html page
     echo "<pre>";
     print_r($arr);
     echo "</pre>";
+}
+
+function isFree($noWay, $ways){//return true if the way is free (B, R, N, SURF roads)
+    $road = $ways[$noWay-1][2];
+    $freeRoad = array('B', 'R', 'N', 'SURF');
+    return in_array($road, $freeRoad)
+}
+
+function isPathFree($nosWays, $ways){//return the fact that every ways of the path is free
+    foreach($nosWays as $noway){
+        if(!isFree($noway, $ways)){return false;} //if only one way is not free then the path is not free
+    }
+    return true;
+}
+
+function difficulty($nosWays, $ways){//return the highest difficulty of the way
+    $diff = 'U' //default difficulty is 'up' , it means the ways
+    foreach($nosWays as $noway){
+        $d = $ways[$noWay-1][2];
+        if(in_array($d, array('TPH', 'TS', 'TK', 'BUS', 'TSD', 'TC', 'KL'))){true;}
+        elseif($d == 'B' && $diff == 'U'){ $diff='B';}
+        elseif($d == 'R' && ($diff == 'U' || $diff == 'B')){$diff='R';}
+        elseif($d == 'N' && ($diff == 'U' || $diff == 'B' || $diff == 'R')){$diff='N';}
+        else {$diff == 'SURF';}
+    }
+    return $diff;
+}
+
+function diffAltitude($noWay, $ways, $points){//return the difference of altitue between start en end of a way
+    $pointA = $ways[$noWay-1][3];
+    $pointB = $ways[$noWay-1][4];
+
+    $altA = $points[$pointA-1][2];
+    $altB = $points[$pointB-1][2];
+
+    return abs($altA-$altB);
+}
+
+function timeForWay($noWay, $ways){
+
 }
 ?>
