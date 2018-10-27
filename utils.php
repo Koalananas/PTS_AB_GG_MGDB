@@ -1,25 +1,30 @@
 <?php
 
 function main($start, $end){
+    $starttime = microtime(true); //count start
+
     $rawData = readData("Ressources/data_arcs.txt");
-    if($rawData == false){return "Error while reading data file";}
+    if($rawData == false){return "Error while reading data file<br>";}
 
     $points = ExtractFromRaw($rawData);
-    if($points == false){return "Error fetching points";}
+    if($points == false){return "Error fetching points<br>";}
 
     $ways = ExtractFromRaw($rawData);
-    if($ways == false){return "Error fetching ways";}
+    if($ways == false){return "Error fetching ways<br>";}
 
-    echo tellWays($ways, $start, $end); //returning all ways(a way is list of path) separated by line-return, the way is composed of numbers paths separated by comma
+    $myways = tellWays($ways, $start, $end); //returning all ways(a way is list of path), the way is composed of numbers paths
+    $mywaysAndStats = buildStatforWays($myways, $ways, $points);
+    
+    $stoptime = microtime(true);
+    echo 'Time clapsed : '. ($stoptime - $starttime).' s<br>';
+    echo_pre($mywaysAndStats);
     // the parameter 'maxlength of the way' is in the tellWays function
-
-
 }
 
 function tellWays($ways, $start, $end){//return a string of row, each row contains a list of way, each row is a possible path to go from 'start' to 'end'
-    $maxlength = 15; //the maximum length of the way;
+    $maxlength = 10; //the maximum length of the way;
 
-    $GLOBALS['ouput'] = "";
+    $GLOBALS['ouput'] = array();
     find($ways, $start, $end, array(), 0, $maxlength);
     $temp = $GLOBALS['ouput'];
     unset($GLOBALS['ouput']);
@@ -64,7 +69,7 @@ function find($ways, $start, $end, $queue, $stp, $maxlength){//function used by 
             foreach($queue as $item){
                 array_push($outp, $item['nuWay']);
             }
-            $GLOBALS['ouput'] .= implode(",",$outp ). "<br>";
+            array_push($GLOBALS['ouput'], $outp);
 
         }
         //#############CONTINUE###############################
@@ -126,10 +131,9 @@ function echo_pre($arr){//print an array for html page
 
 function isFree($noWay, $ways){//return true if the way is free (B, R, N, SURF roads)
     $road = $ways[$noWay-1][2];
-    $freeRoad = array('B', 'R', 'N', 'SURF');
-    return in_array($road, $freeRoad)
+    $freeRoad = array('V','B', 'R', 'N', 'SURF', 'KL');
+    return in_array($road, $freeRoad);
 }
-
 function isPathFree($nosWays, $ways){//return the fact that every ways of the path is free
     foreach($nosWays as $noway){
         if(!isFree($noway, $ways)){return false;} //if only one way is not free then the path is not free
@@ -137,15 +141,17 @@ function isPathFree($nosWays, $ways){//return the fact that every ways of the pa
     return true;
 }
 
-function difficulty($nosWays, $ways){//return the highest difficulty of the way
-    $diff = 'U' //default difficulty is 'up' , it means the ways
+function difficultyWay($nosWays, $ways){//return the highest difficulty of the way
+    $diff = 0; //default difficulty is 'up' , it means the ways never go down
     foreach($nosWays as $noway){
-        $d = $ways[$noWay-1][2];
-        if(in_array($d, array('TPH', 'TS', 'TK', 'BUS', 'TSD', 'TC', 'KL'))){true;}
-        elseif($d == 'B' && $diff == 'U'){ $diff='B';}
-        elseif($d == 'R' && ($diff == 'U' || $diff == 'B')){$diff='R';}
-        elseif($d == 'N' && ($diff == 'U' || $diff == 'B' || $diff == 'R')){$diff='N';}
-        else {$diff == 'SURF';}
+        $d = $ways[$noway-1][2];
+        if(in_array($d, array('TPH', 'TS', 'TK', 'BUS', 'TSD', 'TC'))){true;}
+        elseif($d == 'V' && $diff == 0){ $diff=1;}
+        elseif($d == 'B' && $diff <2 ){$diff=2;}
+        elseif($d == 'R' && $diff <3 ){$diff=3;}
+        elseif($d == 'N' && $diff <4 ){$diff=4;}
+        elseif($d == 'KL' && $diff <5 ){$diff=5;}
+        else {$diff = 6;}//snowpark
     }
     return $diff;
 }
@@ -160,7 +166,78 @@ function diffAltitude($noWay, $ways, $points){//return the difference of altitue
     return abs($altA-$altB);
 }
 
-function timeForWay($noWay, $ways){
+function timeForWay($noway, $ways, $points){
+    $myway = $ways[$noway-1];
+    $diffaltitude = diffAltitude($noway, $ways, $points);
 
+    switch($myway[2]){
+        case 'V':
+            return ($diffaltitude/100) * 5;
+        case 'B':
+            return ($diffaltitude/100) * 4;
+        case 'R':
+            return ($diffaltitude/100) * 3;
+        case 'N':
+            return ($diffaltitude/100) * 2;
+        case 'KL':
+            return ($diffaltitude/100) * (10/60); //10 sec
+        case 'SURF':
+            return ($diffaltitude/100) * 3;
+        case 'TPH':
+            return ($diffaltitude/100) * 2 + 4;
+        case 'TC':
+            return ($diffaltitude/100) * 3 + 2;
+        case 'TSD':
+            return ($diffaltitude/100) * 3 + 1;
+        case 'TS':
+            return ($diffaltitude/100) * 4 + 1;
+        case 'TPH':
+            return ($diffaltitude/100) * 4 + 1;
+        case 'BUS':
+            $startPoint = $myway[3];
+            $stopPoint = $myway[4];
+
+            $startName = $points[$startPoint-1][1]; //name of the point
+            $stopName = $points[$stopPoint-1][1];
+
+            if( ($startName == 'Arc2000' && $stopName =='Arc1600') || ($startName == 'Arc1600' && $stopName =='Arc2000')){
+                return 40;
+            }
+            elseif( ($startName == 'Arc1600' && $stopName =='Arc1800') || ($startName == 'Arc1800' && $stopName =='Arc1600')){
+                return 30;
+            }
+            else{
+                echo "Error while finding BUS station with n° " . $nosWay . " transport : " . $myway[2]."<br>";
+                return false;
+            }
+        default:
+            echo "Error with n° " . $nosWay . " transport : " . $myway[2]."<br>";
+            return 0;
+
+    }
+
+}
+function timeForWays($nosWays, $ways, $points){
+    $total = 0;
+    foreach($nosWays as $noway){
+        $total += timeForWay($noway, $ways, $points); 
+    }
+    return $total;
+}
+
+function buildStatforway($myway, $ways, $points){
+    $free = isPathFree($myway, $ways);
+    $difficulty = difficultyWay($myway, $ways);
+    $totalTime = timeForWays($myway, $ways, $points);
+
+    return array('free'=>$free, 'difficulty'=>$difficulty, 'totalMinuteTime'=>$totalTime);
+}
+function buildStatforWays($myways, $ways, $points){
+    $results = array();
+    foreach($myways as $myway){
+        $stats = buildStatforway($myway, $ways, $points);
+        array_push($results, array($myway, $stats));
+    }
+    return $results;
 }
 ?>
