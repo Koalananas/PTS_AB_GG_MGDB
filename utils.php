@@ -136,9 +136,9 @@ function isFree($noWay, $ways){//return true if the way is free (B, R, N, SURF r
 }
 function isPathFree($nosWays, $ways){//return the fact that every ways of the path is free
     foreach($nosWays as $noway){
-        if(!isFree($noway, $ways)){return false;} //if only one way is not free then the path is not free
+        if(!isFree($noway, $ways)){return 0;} //if only one way is not free then the path is not free
     }
-    return true;
+    return 1;
 }
 
 function difficultyWay($nosWays, $ways){//return the highest difficulty of the way
@@ -146,12 +146,12 @@ function difficultyWay($nosWays, $ways){//return the highest difficulty of the w
     foreach($nosWays as $noway){
         $d = $ways[$noway-1][2];
         if(in_array($d, array('TPH', 'TS', 'TK', 'BUS', 'TSD', 'TC'))){true;}
-        elseif($d == 'V' && $diff == 0){ $diff=1;}
-        elseif($d == 'B' && $diff <2 ){$diff=2;}
-        elseif($d == 'R' && $diff <3 ){$diff=3;}
-        elseif($d == 'N' && $diff <4 ){$diff=4;}
-        elseif($d == 'KL' && $diff <5 ){$diff=5;}
-        else {$diff = 6;}//snowpark
+        elseif($d == 'V' && $diff < 2){ $diff=1;}
+        elseif($d == 'B' && $diff <3 ){$diff=2;}
+        elseif($d == 'R' && $diff <4 ){$diff=3;}
+        elseif($d == 'N' && $diff <5 ){$diff=4;}
+        elseif($d == 'KL' && $diff <6 ){$diff=5;}
+        elseif($d == 'SURF' && $diff <7 ){$diff=6;}
     }
     return $diff;
 }
@@ -191,7 +191,7 @@ function timeForWay($noway, $ways, $points){
             return ($diffaltitude/100) * 3 + 1;
         case 'TS':
             return ($diffaltitude/100) * 4 + 1;
-        case 'TPH':
+        case 'TK':
             return ($diffaltitude/100) * 4 + 1;
         case 'BUS':
             $startPoint = $myway[3];
@@ -200,14 +200,14 @@ function timeForWay($noway, $ways, $points){
             $startName = $points[$startPoint-1][1]; //name of the point
             $stopName = $points[$stopPoint-1][1];
 
-            if( ($startName == 'Arc2000' && $stopName =='Arc1600') || ($startName == 'Arc1600' && $stopName =='Arc2000')){
+            if( ($startName == 'arc2000' && $stopName =='arc1600') || ($startName == 'arc1600' && $stopName =='arc2000')){
                 return 40;
             }
-            elseif( ($startName == 'Arc1600' && $stopName =='Arc1800') || ($startName == 'Arc1800' && $stopName =='Arc1600')){
+            elseif( ($startName == 'arc1600' && $stopName =='arc1800') || ($startName == 'arc1800' && $stopName =='arc1600')){
                 return 30;
             }
             else{
-                echo "Error while finding BUS station with n° " . $nosWay . " transport : " . $myway[2]."<br>";
+                echo "Error while finding BUS station with n° " . $noway . " transport : " . $myway[2]."<br>";
                 return false;
             }
         default:
@@ -236,7 +236,7 @@ function buildStatforWays($myways, $ways, $points){
     $results = array();
     foreach($myways as $myway){
         $stats = buildStatforway($myway, $ways, $points);
-        array_push($results, array($myway, $stats));
+        array_push($results, array('ways'=>$myway, 'sats'=>$stats));
     }
     return $results;
 }
