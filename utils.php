@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ERROR | E_WARNING | E_PARSE); // | E_NOTICE
 
 function main($start, $end){
     $starttime = microtime(true); //count start
