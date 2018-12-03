@@ -39,4 +39,8 @@ if(isset($_GET['start']) && isset($_GET['end'])){
 //main($s,$e); //start point, end point
 
 main2($s,$e);
+
+echo '<br\><br\><br\>';
+
+main($s,$e);
 ?>

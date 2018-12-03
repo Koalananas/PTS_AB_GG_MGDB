@@ -22,6 +22,7 @@ function main($start, $end){
 }
 
 function main2($start, $end){
+    require("dijkstra.php");
     $rawData = readData("Ressources/data_arcs.txt");
     if($rawData == false){return "Error while reading data file<br>";}
 
@@ -36,16 +37,13 @@ function main2($start, $end){
         $ptA = $way[3];
         $ptB = $way[4];
         $cost = timeForWay($way[0], $ways, $points);
-        $graph[$ptA][$ptB] = $cost; 
+        $graph[$ptA][intval($ptB)] = $cost; 
     }
-    
-    include("dijkstra.php");
+
 
     $mydisjkstra = new Dijkstra($graph);
-    $res = $mydisjkstra->shortestPaths($start, $end);
-    echo_pre($res);
-    echo '<br\><br\><br\>';
-    echo_pre($graph);
+    $res = $mydisjkstra->shortestPaths(5, 1);
+    print_r($res);
 }
 
 function tellWays($ways, $start, $end){//return a string of row, each row contains a list of way, each row is a possible path to go from 'start' to 'end'
