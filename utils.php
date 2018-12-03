@@ -21,6 +21,33 @@ function main($start, $end){
     // the parameter 'maxlength of the way' is in the tellWays function
 }
 
+function main2($start, $end){
+    $rawData = readData("Ressources/data_arcs.txt");
+    if($rawData == false){return "Error while reading data file<br>";}
+
+    $points = ExtractFromRaw($rawData);
+    if($points == false){return "Error fetching points<br>";}
+
+    $ways = ExtractFromRaw($rawData);
+    if($ways == false){return "Error fetching ways<br>";}
+
+    $graph = array();
+    foreach($ways as $way){
+        $ptA = $way[3];
+        $ptB = $way[4];
+        $cost = timeForWay($way[0], $ways, $points);
+        $graph[$ptA][$ptB] = $cost; 
+    }
+    
+    include("dijkstra.php");
+
+    $mydisjkstra = new Dijkstra($graph);
+    $res = $mydisjkstra->shortestPaths($start, $end);
+    echo_pre($res);
+    echo '<br\><br\><br\>';
+    echo_pre($graph);
+}
+
 function tellWays($ways, $start, $end){//return a string of row, each row contains a list of way, each row is a possible path to go from 'start' to 'end'
     $maxlength = 10; //the maximum length of the way;
 

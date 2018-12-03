@@ -36,5 +36,7 @@ if(isset($_GET['start']) && isset($_GET['end'])){
     $s = $_GET['start'];
     $e = $_GET['end'];
 }
-main($s,$e); //start point, end point
+//main($s,$e); //start point, end point
+
+main2($s,$e);
 ?>
