@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ERROR | E_WARNING | E_PARSE); // | E_NOTICE
 
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
@@ -39,17 +40,33 @@ function dijkstra($start, $end){
         $ptA = $way[3];
         $ptB = $way[4];
         $cost = timeForWay($way[0], $ways, $points);
-        $graph[$ptA][intval($ptB)] = $cost; 
+        $graph[intval($ptA)][intval($ptB)] = intval($cost); 
     }
 
 
     $mydisjkstra = new Dijkstra($graph);
-    $res = $mydisjkstra->shortestPaths(5, 1);
-    print_r($res);
+    $res = $mydisjkstra->shortestPaths($start, $end)[0];
+    $sol = array();
+    for($i =0; $i<count($res)-1; $i++){
+        $s = $res[$i];
+        $e = $res[$i+1];
+
+        $lowercost = -1;
+        $w = -1;
+        foreach($ways as $way){
+            if(intval($s) == intval($way[3]) && intval($e) == intval($way[4]) && ($lowercost>timeForWay($way[0], $ways, $points) || $lowercost == -1)){
+                $lowercost = timeForWay($way[0], $ways, $points);
+                $w = $way[0];
+            }
+        }
+        array_push($sol, $w);
+    }
+
+    print_r($sol);
 }
 
 function tellWays($ways, $start, $end){//return a string of row, each row contains a list of way, each row is a possible path to go from 'start' to 'end'
-    $maxLength = 20; //the maximum length of the way;
+    $maxLength = 10; //the maximum length of the way;
 
     $GLOBALS['ouput'] = array();
     findWays($ways, $start, $end, array(), 0, $maxLength);
