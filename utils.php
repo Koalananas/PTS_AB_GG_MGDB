@@ -1,8 +1,9 @@
 <?php
+error_reporting(E_ERROR | E_WARNING | E_PARSE); // | E_NOTICE
 
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
-function main($start, $end){
+function brut_force($start, $end){
     $startTime = microtime(true); //count start
 
     $rawData = readData("Ressources/data_arcs.txt");
@@ -23,8 +24,51 @@ function main($start, $end){
     // the parameter 'maxlength of the way' is in the tellWays function
 }
 
+function dijkstra($start, $end){
+    require("dijkstra.php");
+    $rawData = readData("Ressources/data_arcs.txt");
+    if($rawData == false){return "Error while reading data file<br>";}
+
+    $points = ExtractFromRaw($rawData);
+    if($points == false){return "Error fetching points<br>";}
+
+    $ways = ExtractFromRaw($rawData);
+    if($ways == false){return "Error fetching ways<br>";}
+
+    $graph = array();
+    foreach($ways as $way){
+        $ptA = $way[3];
+        $ptB = $way[4];
+        $cost = timeForWay($way[0], $ways, $points);
+        $graph[intval($ptA)][intval($ptB)] = intval($cost); 
+    }
+
+
+    $mydisjkstra = new Dijkstra($graph);
+    $res = $mydisjkstra->shortestPaths($start, $end)[0];
+    $sol = array();
+    for($i =0; $i<count($res)-1; $i++){
+        $s = $res[$i];
+        $e = $res[$i+1];
+
+        $lowercost = -1;
+        $w = -1;
+        foreach($ways as $way){
+            if(intval($s) == intval($way[3]) && intval($e) == intval($way[4]) && ($lowercost>timeForWay($way[0], $ways, $points) || $lowercost == -1)){
+                $lowercost = timeForWay($way[0], $ways, $points);
+                $w = $way[0];
+            }
+        }
+        array_push($sol, $w);
+    }
+
+    print_r($sol);
+    $stopTime = microtime(true);
+    echo 'Time clapsed : '. ($stopTime - $startTime).' s<br>';
+}
+
 function tellWays($ways, $start, $end){//return a string of row, each row contains a list of way, each row is a possible path to go from 'start' to 'end'
-    $maxLength = 20; //the maximum length of the way;
+    $maxLength = 10; //the maximum length of the way;
 
     $GLOBALS['ouput'] = array();
     findWays($ways, $start, $end, array(), 0, $maxLength);
