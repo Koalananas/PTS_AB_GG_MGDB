@@ -36,11 +36,10 @@ if(isset($_GET['start']) && isset($_GET['end'])){
     $s = $_GET['start'];
     $e = $_GET['end'];
 }
-//main($s,$e); //start point, end point
 
-main2($s,$e); //dij 0.0013370513916016 s
+brut_force($s,$e);
 
 echo '<br\><br\><br\>';
 
-main($s,$e); //brut force 0.016565084457397 s
+dijkstra($s,$e);
 ?>

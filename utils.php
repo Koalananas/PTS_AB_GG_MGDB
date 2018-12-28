@@ -3,7 +3,7 @@ error_reporting(E_ERROR | E_WARNING | E_PARSE); // | E_NOTICE
 
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
-function main($start, $end){
+function brut_force($start, $end){
     $startTime = microtime(true); //count start
 
     $rawData = readData("Ressources/data_arcs.txt");
@@ -24,8 +24,7 @@ function main($start, $end){
     // the parameter 'maxlength of the way' is in the tellWays function
 }
 
-function main2($start, $end){
-    $startTime = microtime(true); //count start
+function dijkstra($start, $end){
     require("dijkstra.php");
     $rawData = readData("Ressources/data_arcs.txt");
     if($rawData == false){return "Error while reading data file<br>";}
