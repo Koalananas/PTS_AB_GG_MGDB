@@ -25,6 +25,7 @@ function main($start, $end){
 }
 
 function main2($start, $end){
+    $startTime = microtime(true); //count start
     require("dijkstra.php");
     $rawData = readData("Ressources/data_arcs.txt");
     if($rawData == false){return "Error while reading data file<br>";}
@@ -63,6 +64,8 @@ function main2($start, $end){
     }
 
     print_r($sol);
+    $stopTime = microtime(true);
+    echo 'Time clapsed : '. ($stopTime - $startTime).' s<br>';
 }
 
 function tellWays($ways, $start, $end){//return a string of row, each row contains a list of way, each row is a possible path to go from 'start' to 'end'

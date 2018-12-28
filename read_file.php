@@ -38,9 +38,9 @@ if(isset($_GET['start']) && isset($_GET['end'])){
 }
 //main($s,$e); //start point, end point
 
-main2($s,$e);
+main2($s,$e); //dij 0.0013370513916016 s
 
 echo '<br\><br\><br\>';
 
-main($s,$e);
+main($s,$e); //brut force 0.016565084457397 s
 ?>
