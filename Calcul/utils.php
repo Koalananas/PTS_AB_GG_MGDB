@@ -6,7 +6,7 @@ error_reporting(E_ERROR | E_WARNING | E_PARSE);
 function brut_force($start, $end){
     $startTime = microtime(true); //count start
 
-    $rawData = readData("Ressources/data_arcs.txt");
+    $rawData = readData("../Ressources/data_arcs.txt");
     if($rawData == false){return "Error while reading data file<br>";}
 
     $points = extractFromRaw($rawData);
@@ -26,7 +26,7 @@ function brut_force($start, $end){
 
 function dijkstra($start, $end){
     require("dijkstra.php");
-    $rawData = readData("Ressources/data_arcs.txt");
+    $rawData = readData("../Ressources/data_arcs.txt");
     if($rawData == false){return "Error while reading data file<br>";}
 
     $points = ExtractFromRaw($rawData);
