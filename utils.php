@@ -1,7 +1,6 @@
 <?php
 error_reporting(E_ERROR | E_WARNING | E_PARSE); // | E_NOTICE
 
-error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
 function brut_force($start, $end){
     $startTime = microtime(true); //count start
@@ -19,8 +18,8 @@ function brut_force($start, $end){
     $myWaysAndStats = buildStatforWays($myWays, $ways, $points);
 
     $stopTime = microtime(true);
-    echo 'Time clapsed : '. ($stopTime - $startTime).' s<br>';
-    echo_pre($myWaysAndStats);
+    #echo 'Time clapsed : '. ($stopTime - $startTime).' s<br>';
+    return($myWaysAndStats);
     // the parameter 'maxlength of the way' is in the tellWays function
 }
 
@@ -46,6 +45,7 @@ function dijkstra($start, $end){
 
     $mydisjkstra = new Dijkstra($graph);
     $res = $mydisjkstra->shortestPaths($start, $end)[0];
+    //echo_pre($res);
     $sol = array();
     for($i =0; $i<count($res)-1; $i++){
         $s = $res[$i];
@@ -62,9 +62,10 @@ function dijkstra($start, $end){
         array_push($sol, $w);
     }
 
-    print_r($sol);
     $stopTime = microtime(true);
-    echo 'Time clapsed : '. ($stopTime - $startTime).' s<br>';
+    #echo 'Time clapsed : '. ($stopTime - $startTime).' s<br>';
+    return($sol);
+
 }
 
 function tellWays($ways, $start, $end){//return a string of row, each row contains a list of way, each row is a possible path to go from 'start' to 'end'
@@ -287,4 +288,95 @@ function buildStatforWays($myWays, $ways, $points){
     }
     return $results;
 }
+
+function dataForFold($points, $ways){
+
+    $graph = array();
+    for($i =0; $i< count($ways); $i++){
+        for($j =0; $j< count($ways); $j++){
+            //$graph[intval($i)][intval($j)] = -1;
+        }
+    }
+
+    foreach($ways as $way){
+        $ptA = $way[3];
+        $ptB = $way[4];
+        $cost = timeForWay($way[0], $ways, $points);
+        $difficulty = $way[2];
+        //$graph[intval($ptA)][intval($ptB)] =  array("cost"=>intval($cost), "difficulty"=>$difficulty);
+        $graph[intval($ptA)][intval($ptB)] =  intval($cost);
+
+    }
+
+    $maxi = count($graph);
+    foreach($graph as $key => $row){
+        if(intval($key) > $maxi ){
+            $maxi = intval($key);
+        }
+        foreach($row as $path => $poid){
+            if(intval($path) >$maxi){
+                $maxi = intval($path);
+            }
+        }
+    }
+
+    $data = array();
+    for($i = 0; $i< $maxi; $i++){
+        $temp = array();
+        for($j = 0; $j< $maxi; $j++){
+            array_push($temp, 0);
+        }
+        array_push($data, $temp);
+    }
+    foreach($graph as $key => $row){
+        $temp = array();
+        for($j = 0; $j< $maxi; $j++){
+            array_push($temp, 0);
+        }
+        foreach($row as $path => $poid){
+            $temp[intval($path)-1] = $poid;
+        }
+        $data[$key-1] = $temp;
+    }
+    return $data;
+}
+
+function FordFulkerson($s, $e){
+    $rawData = readData("Ressources/data_arcs.txt");
+    require("FordFulkerson.php");
+
+    $points = extractFromRaw($rawData);
+    $ways = extractFromRaw($rawData);
+
+    $data = dataForFold($points, $ways);
+
+    $g = new Graph($data);
+
+    $sols = $g->FordFulkerson($s, $e);
+    
+    for($j=0; $j<count($sols)-1; $j++){
+        $res = $sols[$j]["points"];
+        $sol = array();
+
+        for($i =0; $i<count($res)-1; $i++){
+            $s = $res[$i];
+            $e = $res[$i+1];
+    
+            $lowercost = -1;
+            $w = -1;
+            foreach($ways as $way){
+                if(intval($s) == intval($way[3]) && intval($e) == intval($way[4]) && ($lowercost>timeForWay($way[0], $ways, $points) || $lowercost == -1)){
+                    $lowercost = timeForWay($way[0], $ways, $points);
+                    $w = $way[0];
+                }
+            }
+            array_push($sol, $w);
+        }
+        $sols[$j]["points"] = $sol;
+    }
+
+    
+    return($sols);
+}
+ //reste à faire :  utiliser de vraies valeurs pour fordfulkerson ie pas les temps pour faire les chemins mais de vraies capacité de flow
 ?>

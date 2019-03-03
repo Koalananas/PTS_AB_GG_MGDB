@@ -37,9 +37,9 @@ if(isset($_GET['start']) && isset($_GET['end'])){
     $e = $_GET['end'];
 }
 
-brut_force($s,$e);
+#echo_pre(brut_force($s,$e));
 
-echo '<br\><br\><br\>';
+echo_pre(dijkstra($s,$e));
 
-dijkstra($s,$e);
+echo_pre(FordFulkerson($s,$e));
 ?>
