@@ -24,7 +24,8 @@ function brut_force($start, $end){
     // the parameter 'maxlength of the way' is in the tellWays function
 }
 
-function dijkstra($start, $end){
+function dijkstra($start, $end)
+{
     require("dijkstra.php");
     $rawData = readData("../Ressources/data_arcs.txt");
     if($rawData == false){return "Error while reading data file<br>";}
@@ -283,7 +284,7 @@ function buildStatforWays($myWays, $ways, $points){
     $results = array();
     foreach($myWays as $myWay){
         $stats = buildStatforway($myWay, $ways, $points);
-        array_push($results, array('ways'=>$myWay, 'sats'=>$stats));
+        array_push($results, array('ways'=>$myWay, 'stats'=>$stats));
     }
     return $results;
 }
