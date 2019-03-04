@@ -36,10 +36,12 @@ if(isset($_GET['start']) && isset($_GET['end'])){
     $s = $_GET['start'];
     $e = $_GET['end'];
 }
+echo "<h1>Force Brute</h1><br>";
+echo_pre(brut_force($s,$e));
 
-#echo_pre(brut_force($s,$e));
-
+echo "<h1>Dijkstra</h1><br>";
 echo_pre(dijkstra($s,$e));
 
+echo "<h1>FordFulkerson</h1><br>";
 echo_pre(FordFulkerson($s,$e));
 ?>

@@ -35,14 +35,29 @@ function dijkstra($start, $end){
     if($ways == false){return "Error fetching ways<br>";}
 
     $graph = array();
-    foreach($ways as $way){
+    /*foreach($ways as $way){
         $ptA = $way[3];
         $ptB = $way[4];
         $cost = timeForWay($way[0], $ways, $points);
         $graph[intval($ptA)][intval($ptB)] = intval($cost); 
     }
 
-
+    echo_pre($graph);
+    $graph = array();*/
+    foreach($ways as $way){ //keep only shortest path for the way between two points
+        $ptA = $way[3];
+        $ptB = $way[4];
+        $cost = timeForWay($way[0], $ways, $points);
+        if(isset($graph[intval($ptA)][intval($ptB)])){
+            if($graph[intval($ptA)][intval($ptB)]>intval($cost)){
+                $graph[intval($ptA)][intval($ptB)] = intval($cost);
+            }
+        }
+        else{
+            $graph[intval($ptA)][intval($ptB)] = intval($cost);
+        }
+         
+    }
     $mydisjkstra = new Dijkstra($graph);
     $res = $mydisjkstra->shortestPaths($start, $end)[0];
     //echo_pre($res);
