@@ -4,10 +4,10 @@ Class Graph{
         $this->graph = $graph;
         $this->ROW = count($graph);
     }
-    function BFS($s, $t){ // $parent : array
+    function BFS($s, $t){ // $source $target
         $visited = array();
         for($i = 0; $i< $this->ROW ;$i++){
-            array_push($visited, FALSE); // or 0
+            array_push($visited, FALSE); //list of the visited  point (should n t be visited path ?)
         }
 
         $queue = array();
@@ -47,7 +47,7 @@ Class Graph{
         $max_flow = 0;
 
         while($this->BFS($source, $sink)){
-
+            //*************************************************************************************************************
             $preresult = array();
             $tmp = array();
             $path_flow = INF;

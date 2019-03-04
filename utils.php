@@ -18,12 +18,14 @@ function brut_force($start, $end){
     $myWaysAndStats = buildStatforWays($myWays, $ways, $points);
 
     $stopTime = microtime(true);
-    #echo 'Time clapsed : '. ($stopTime - $startTime).' s<br>';
+    $myWaysAndStats['utilisation']="";
+    $myWaysAndStats['computeTimeInS']=$stopTime - $startTime;
     return($myWaysAndStats);
     // the parameter 'maxlength of the way' is in the tellWays function
 }
 
 function dijkstra($start, $end){
+    $startTime = microtime(true);
     require("dijkstra.php");
     $rawData = readData("Ressources/data_arcs.txt");
     if($rawData == false){return "Error while reading data file<br>";}
@@ -78,7 +80,8 @@ function dijkstra($start, $end){
     }
 
     $stopTime = microtime(true);
-    #echo 'Time clapsed : '. ($stopTime - $startTime).' s<br>';
+    $sol['utilisation']="";
+    $sol['computeTimeInS']=$stopTime - $startTime;
     return($sol);
 
 }
@@ -307,19 +310,13 @@ function buildStatforWays($myWays, $ways, $points){
 function dataForFold($points, $ways){
 
     $graph = array();
-    for($i =0; $i< count($ways); $i++){
-        for($j =0; $j< count($ways); $j++){
-            //$graph[intval($i)][intval($j)] = -1;
-        }
-    }
 
     foreach($ways as $way){
         $ptA = $way[3];
         $ptB = $way[4];
         $cost = timeForWay($way[0], $ways, $points);
-        $difficulty = $way[2];
-        //$graph[intval($ptA)][intval($ptB)] =  array("cost"=>intval($cost), "difficulty"=>$difficulty);
-        $graph[intval($ptA)][intval($ptB)] =  intval($cost);
+        $flow = $cost; //temp
+        $graph[intval($ptA)][intval($ptB)] +=  intval($cost);
 
     }
 
@@ -356,7 +353,62 @@ function dataForFold($points, $ways){
     return $data;
 }
 
+function threedimForFold($points, $ways){
+
+    $graph = array();
+    foreach($ways as $way){
+        $ptA = $way[3];
+        $ptB = $way[4];
+        $cost = timeForWay($way[0], $ways, $points);
+        $val = array("way"=>$way[0], "flow"=>$cost); //3dimension array with last dim are num of ways + flow available
+
+        if(isset($graph[intval($ptA)][intval($ptB)])){
+            array_push($graph[intval($ptA)][intval($ptB)], $val);
+        }
+        else{
+            $graph[intval($ptA)][intval($ptB)] = array($val);
+        }
+
+    }//now we have got a 3 dimension array, lets fill the empty values with 0
+
+    $maxi = count($graph);
+    foreach($graph as $key => $row){
+        if(intval($key) > $maxi ){
+            $maxi = intval($key);
+        }
+        foreach($row as $direction => $solutions){
+            foreach($solutions as $path => $flow)
+            {
+                if(intval($path) >$maxi){
+                    $maxi = intval($path);
+                }
+            }
+        }
+    }
+
+    $data = array();
+    for($i = 0; $i< $maxi; $i++){
+        $temp = array();
+        for($j = 0; $j< $maxi; $j++){
+            array_push($temp, 0);
+        }
+        array_push($data, $temp);
+    }
+    foreach($graph as $key => $row){
+        $temp = array();
+        for($j = 0; $j< $maxi; $j++){
+            array_push($temp, 0);
+        }
+        foreach($row as $direction => $solutions){
+            $temp[intval($direction)-1] = $solutions;
+        }
+        $data[$key-1] = $temp;
+    }
+
+    return $data;
+}
 function FordFulkerson($s, $e){
+    $startTime = microtime(true);
     $rawData = readData("Ressources/data_arcs.txt");
     require("FordFulkerson.php");
 
@@ -364,7 +416,7 @@ function FordFulkerson($s, $e){
     $ways = extractFromRaw($rawData);
 
     $data = dataForFold($points, $ways);
-
+    
     $g = new Graph($data);
 
     $sols = $g->FordFulkerson($s, $e);
@@ -377,20 +429,26 @@ function FordFulkerson($s, $e){
             $s = $res[$i];
             $e = $res[$i+1];
     
-            $lowercost = -1;
-            $w = -1;
+            $w = array();
             foreach($ways as $way){
-                if(intval($s) == intval($way[3]) && intval($e) == intval($way[4]) && ($lowercost>timeForWay($way[0], $ways, $points) || $lowercost == -1)){
-                    $lowercost = timeForWay($way[0], $ways, $points);
-                    $w = $way[0];
+                if(intval($s) == intval($way[3]) && intval($e) == intval($way[4])){
+                    array_push($w, $way[0]);
                 }
             }
             array_push($sol, $w);
         }
-        $sols[$j]["points"] = $sol;
+        $sols[$j]["ways"] = $sol;
     }
 
-    
+    $sols["utilisation"] = "Pour aller du point a au point b, vous avez autant de suite de points possible que d'index dans le tableau de première dimension (autre que 
+    'maxflow' et 'utilisation')\n
+    Dans chaque index du premier tableau la cle ways vous indique quels chemins prendre, si les sous tableaux de 'ways' contiennent une seule 
+    valeur c'est qu'il n'y a qu'un chemin qui relie deux points intermediaire, il y a autant de chemins reliant les deux points que de valeurs 
+    dans le sous tableau en question.\n
+    En prenant un chemin proposé dans chaque sous tableau de 'ways' vous relierez les points a et b\n
+    La cle flow indique la capacite totale de tout les chemins reliant les points a et b";
+    $stopTime = microtime(true);
+    $sols['computeTimeInS']=$stopTime - $startTime;
     return($sols);
 }
  //reste à faire :  utiliser de vraies valeurs pour fordfulkerson ie pas les temps pour faire les chemins mais de vraies capacité de flow
