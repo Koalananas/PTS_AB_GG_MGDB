@@ -309,7 +309,7 @@ function buildStatforWays($myWays, $ways, $points){
     $results = array();
     foreach($myWays as $myWay){
         $stats = buildStatforway($myWay, $ways, $points);
-        array_push($results, array('ways'=>$myWay, 'sats'=>$stats));
+        array_push($results, array('ways'=>$myWay, 'totalMinuteTime'=>$stats['totalMinuteTime']));
     }
     return $results;
 }
