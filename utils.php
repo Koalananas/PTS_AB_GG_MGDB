@@ -24,7 +24,8 @@ function brut_force($start, $end, $restriction=array()){
     $myWaysAndStats = buildStatforWays($myWays, $ways, $points);
 
     $stopTime = microtime(true);
-    $myWaysAndStats['utilisation']="";
+    $myWaysAndStats['description']="Chaque index numeroté de l'objet principal correspond à une possibilité de chemin à prendre pour aller du  point a au point b.\n
+    La liste de ways sont les chemins successif à prendre, totalMinuteTime est le nombre de minute pour relier le point a au point b via les chemins listés avant.";
     $myWaysAndStats['computeTimeInS']=$stopTime - $startTime;
     return($myWaysAndStats);
     // the parameter 'maxlength of the way' is in the tellWays function
@@ -64,6 +65,7 @@ function dijkstra($start, $end, $restriction=array()){
     $res = $mydisjkstra->shortestPaths($start, $end)[0];
     //echo_pre($res);
     $sol = array();
+    $sol['ways'] = array();
     for($i =0; $i<count($res)-1; $i++){
         $s = $res[$i];
         $e = $res[$i+1];
@@ -76,13 +78,15 @@ function dijkstra($start, $end, $restriction=array()){
                 $w = $way[0];
             }
         }
-        array_push($sol, $w);
+        $sol['totalMinuteTime'] += $lowercost;
+        array_push($sol['ways'], $w);
     }
 
     $stopTime = microtime(true);
-    $sol['utilisation']="";
-    $sol['computeTimeInS']=$stopTime - $startTime;
-    return($sol);
+    $res = [$sol];
+    $res['description']="L'index 0 de cette objet donne la suite de chemin à prendre pour aller du point a au point b le plus rapidement avec Dijkstra";
+    $res['computeTimeInS']=$stopTime - $startTime;
+    return($res);
 
 }
 
@@ -445,7 +449,7 @@ function FordFulkerson($s, $e, $restriction=array()){
         $sols[$j]["ways"] = $sol;
     }
 
-    $sols["utilisation"] = "Pour aller du point a au point b, vous avez autant de suite de points possible que d'index dans le tableau de première dimension (autre que 
+    $sols["description"] = "Pour aller du point a au point b, vous avez autant de suite de points possible que d'index dans le tableau de première dimension (autre que 
     'maxflow' et 'utilisation')\n
     Dans chaque index du premier tableau la cle ways vous indique quels chemins prendre, si les sous tableaux de 'ways' contiennent une seule 
     valeur c'est qu'il n'y a qu'un chemin qui relie deux points intermediaire, il y a autant de chemins reliant les deux points que de valeurs 
