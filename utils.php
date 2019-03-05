@@ -1,18 +1,24 @@
 <?php
 error_reporting(E_ERROR | E_WARNING | E_PARSE); // | E_NOTICE
+header('Access-Control-Allow-Origin: *');
 
-
-function brut_force($start, $end){
-    $startTime = microtime(true); //count start
-
+function pointsandways($restriction){
     $rawData = readData("Ressources/data_arcs.txt");
     if($rawData == false){return "Error while reading data file<br>";}
 
     $points = extractFromRaw($rawData);
     if($points == false){return "Error fetching points<br>";}
 
-    $ways = extractFromRaw($rawData);
+    $ways = extractFromRaw($rawData, $restriction);
     if($ways == false){return "Error fetching ways<br>";}
+
+    return [$points, $ways];
+}
+
+function brut_force($start, $end, $restriction=array()){
+    $startTime = microtime(true); //count start
+
+    [$points, $ways] = pointsandways($restriction);
 
     $myWays = tellWays($ways, $start, $end); //returning all ways(a way is list of path), the way is composed of numbers paths
     $myWaysAndStats = buildStatforWays($myWays, $ways, $points);
@@ -24,17 +30,11 @@ function brut_force($start, $end){
     // the parameter 'maxlength of the way' is in the tellWays function
 }
 
-function dijkstra($start, $end){
+function dijkstra($start, $end, $restriction=array()){
     $startTime = microtime(true);
     require("dijkstra.php");
-    $rawData = readData("Ressources/data_arcs.txt");
-    if($rawData == false){return "Error while reading data file<br>";}
 
-    $points = ExtractFromRaw($rawData);
-    if($points == false){return "Error fetching points<br>";}
-
-    $ways = ExtractFromRaw($rawData);
-    if($ways == false){return "Error fetching ways<br>";}
+    [$points, $ways] = pointsandways($restriction);
 
     $graph = array();
     /*foreach($ways as $way){
@@ -120,6 +120,7 @@ function findWays($ways, $start, $end, $queue, $step, $maxLength){//function use
             /*
                 2,3,29,37,32,69,54,11,17,93 (wrong) -> 2,37,69,54,17,93 (right)
             */
+
             for($i = 0; $i < count($queue); $i++){
                 if($i+1<count($queue)){
                     $now1 =$queue[$i]['nuWay']-1;
@@ -170,19 +171,25 @@ function readData($path){//return a file from the path
     return false;
 }
 
-function extractFromRaw($rawData){//extract line of a file formated like 'data_arcs.txt'
+function extractFromRaw($rawData, $restriction=array()){//extract line of a file formated like 'data_arcs.txt'
+    if(in_array("P", $restriction)){array_push($restriction, "TPH", "TC", "TSD", "TS", "TK", "BUS");}
     $points = array();
     $nbPoints = fgets($rawData);
     for($i = 0; $i< $nbPoints; $i++){
         $line = fgets($rawData);
         $infoLine = explode ("\t",$line);
-        if(count($infoLine) == 3){
+        if($infoLine[3] == ""){
             array_push($points, array($infoLine[0], $infoLine[1], $infoLine[2]));
         }
-        if(count($infoLine) == 5){
-            array_push($points, array($infoLine[0], $infoLine[1], $infoLine[2], $infoLine[3], $infoLine[4]));
+        else{
+            if(in_array($infoLine[2], $restriction))
+            {
+                array_push($points, array($infoLine[0], $infoLine[1], $infoLine[2], $infoLine[3], $infoLine[4]));
+            }
+            else{
+                array_push($points, array($infoLine[0], $infoLine[1], $infoLine[2], -1, -1));
+            }
         }
-        else {return false;}
 
     }
     return $points;
@@ -272,7 +279,7 @@ function timeForWay($numberWay, $ways, $points){
                 return 30;
             }
             else{
-                echo "Error while findWaysing BUS station with n° " . $numberWay . " transport : " . $myWay[2]."<br>";
+                //echo "Error while findWaysing BUS station with n° " . $numberWay . " transport : " . $myWay[2]."<br>";
                 return false;
             }
         default:
@@ -407,13 +414,11 @@ function threedimForFold($points, $ways){
 
     return $data;
 }
-function FordFulkerson($s, $e){
+function FordFulkerson($s, $e, $restriction=array()){
     $startTime = microtime(true);
-    $rawData = readData("Ressources/data_arcs.txt");
     require("FordFulkerson.php");
 
-    $points = extractFromRaw($rawData);
-    $ways = extractFromRaw($rawData);
+    [$points, $ways] = pointsandways($restriction);
 
     $data = dataForFold($points, $ways);
     
