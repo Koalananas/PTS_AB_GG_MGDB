@@ -1,89 +1,243 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 <html>
     <head>
-    <meta charset = "utf-8">
-    <link href = "styles.css" rel = "stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="script.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Crete+Round" rel="stylesheet">
-    <title>We Ski</title>
-    </head>
-    
-    <body>
-        <header>
-            <div class = "wrapper">
-                <h1>We Ski<span class = "blue">.</span></h1>
-                <nav>
-                    <ul>
-                        <li><a href = "#main-image">Accueil</a></li>
-                        <li><a href = "#steps">Destinations</a></li>                        
-                        <li><a href = "#contact">Contact</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </header>
-    
+    <title>WeSki</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" >
         
-        <section id = "main-image">
-            <div class = "wrapper">
-                <h2>Chercher votre<br><strong>trajet sur mesure</strong></h2>
-                <a href ="Calcul\read_file.php" target = "_blank" class = "button1">Par ici</a>
-            </div>
-        </section>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target=".navbar" data-offset="60">
+
+      
+    <nav class="navbar navbar-expand-md navbar-dark sticky-top">
+        <a class="navbar-brand" href="#"></a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbar">
+                <i class="fas fa-bars fa-lg"></i>
+        </button>
         
-        <section id = "steps">
-             <div class = "wrapper">
-                <ul>
-                    <li id = "step1">
-                        <h4>Trouver votre chemin</h4>
-                        <p>
-                            Trouver le chemin le plus adapté à vos besoins 
-                        </p>
+        <div class="collapse navbar-collapse justify-content-center" id="myNavbar">
+            <ul class="nav nav-pills navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="#about">Accueil</a></li>                
+                <li class="nav-item"><a class="nav-link" href="#experience">Nos Trajets</a></li>
+                <li class="nav-item"><a class="nav-link" href="#portfolio">Nous retrouver</a></li>
+                <li class="nav-item"><a class="nav-link" href="#recommandations">Avis utilisateurs</a></li>          
+                <li class="nav-item"><a class="nav-link" href="#Contact">Contact</a></li>     
+            </ul>
+        </div>
+    </nav>
+
+    <section id="about" class="container-fluid text-center" >
+        <div class="col-4 col-lg-4 profile-picture">
+            <img src="images/1200px-Alpine_skiing_pictogram.svg.png" alt="Un skieur">
+        </div>
+        <div class="heading">
+                <h1>WeSki.</h1>
+                <h3>Créateur de trajet depuis 1988</h3>
+                <a href ="Calcul\read_file.php" class="button1">Chercher son chemin</a>
+        </div>
+    </section>          
+        <section id="experience">
+        
+            <div class="container-fluid">
+                <div class="white-divider"></div>
+                <div class="heading">
+                    <h2>Notre outils :</h2>
+                </div>
+                <ul class="timeline">
+                    <li>
+                        <div class="timeline-badge"><span class="fas fa-briefcase"></span></div>
+                        <div class="timeline-panel-container">
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    
+                                    <h4>Accessible depuis partout</h4>                                    
+                                </div>
+                                <div class="timeline-body">
+                                    <p>Accessible depuis tous les appareils</p>
+                                    <p id = "p_experience">
+                                       <span class="fas fa-desktop"></span> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                                       <span class="fas fa-laptop"></span> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                                       <span class="fas fa-tablet"></span>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                                       <span class="fas fa-mobile"></span>
+                                    </p>                                    
+                                </div>
+                            </div>
+                        </div>
                     </li>
-                    <li id = "step2">
-                        <h4>Organiser</h4>
-                        <p>
-                            Planifier vos trajets à l'avance 
-                        </p>
+                    <li>
+                        <div class="timeline-badge"><span class="fas fa-briefcase"></span></div>
+                        <div class="timeline-panel-container-inverted">
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">                                    
+                                    <h4>Expérience personalisée</h4>                                    
+                                </div>
+                                <div class="timeline-body">
+                                    <p>Choisir ses trajets en fonction : <br><span class="fas fa-clock"></span>&nbsp;&nbsp;  Du temps devant soit<br><span class = "fas fa-star "></span>&nbsp;&nbsp; De son niveau</p>
+                                   
+                                </div>
+                            </div>
+                        </div>
                     </li>
-                    <li id = "step3">
-                        <h4>Profitez</h4>
-                        <p>
-                            30 minutes devant vous ? Trouver des balades adaptées
-                        </p>                  
+                    <li>
+                        <div class="timeline-badge"><span class="fas fa-briefcase"></span></div>
+                        <div class="timeline-panel-container">
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">                                   
+                                    <h4>Fiabilité</h4>                                 
+                                </div>
+                                <div class="timeline-body">
+                                    <p><span class = "fas fa-hourglass-half"></span> &nbsp;&nbsp; Rapidité</p>
+                                    <p><span class = "fas fa-balance-scale"></span>&nbsp;&nbsp;Répartition équitables des utilisateurs sur les pistes</p>
+                                </div>
+                            </div>
+                        </div>
                     </li>
+                
                 </ul>
             </div>
-            <div class = "clear">
-            </div>
-        </section>        
-       
-        
-        <section id = "contact">
-            <div class = "wrapper">
-                <h3>Contactez-Nous</h3>
-                <p>Chez We Ski nous savons que skier et profiter sont vos priorités.<br>N'hésitez pas à nous poser la moindre question par rapport à notre outils et nous proposer des évolutions</p>
-                <form>
-                    <label for= "name">Nom </label>
-                    <input type ="text" id = "name" placeholder="Votre Nom">
-                    <label for="email">Email </label>
-                    <input type ="text" id = "email" placeholder="Votre email">
-                    <input type = "submit" value = "OK" class = "button4">
-                </form>
-            </div>
+            
         </section>
+      
+      
+        
+      
+        <section id="portfolio">
+            <div class="container">
+                <div class="white-divider"></div>
+                <div class="heading">
+                    <h2>Nous retrouver :</h2>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <a href="http://www.facebook.com" target="_blank">
+                            <img class="img-thumbnail" src="images/facebook_share.png" alt="facebook share">
+                        </a>
+                    </div>
+                     <div class="col-md-4">
+                        <a href="http://www.google.com" target="_blank">
+                            <img class="img-thumbnail" src="images/google_translate.png" alt="google translate">
+                        </a>
+                    </div>
+                     <div class="col-md-4">
+                        <a href="http://www.twitter.com" target="_blank">
+                            <img class="img-thumbnail" src="images/twitter_video.png" alt="twitter video">
+                        </a>
+                    </div>
+                </div>
+                 <div class="row">
+                    <div class="col-md-4">
+                        <a href="http://www.google.com" target="_blank">
+                            <img class="img-thumbnail" 
+                           src="images/youtube.png" alt="youtube">
+                        </a>
+                    </div>
+                     <div class="col-md-4">
+                        <a href="http://www.twitter.com" target="_blank">
+                            <img class="img-thumbnail" src="images/twitter_retweet.png" alt="twitter retweet">
+                        </a>
+                    </div>
+                     <div class="col-md-4">
+                        <a href="http://www.facebook.com" target="_blank">
+                            <img class="img-thumbnail" src="images/facebook_video.png" alt="facebook video">
+                        </a>
+                    </div>
+                </div>
+            
+            </div>
+            
+        </section>
+      
+      
+       <section id="recommandations">
+            <div class="container">
+                <div class="red-divider"></div>
+                <div class="heading">
+                    <h2>Recommandations</h2>
+                </div>
+                <div id="myCarousel" class="carousel slide text-center" data-ride="carousel">
+                    <ol class="carousel-indicators">
+                         <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                         <li data-target="#myCarousel" data-slide-to="1"></li>
+                         <li data-target="#myCarousel" data-slide-to="2"></li>  
+                    </ol>
+                    <div class="carousel-inner" role="listbox">
+                        <div class="carousel-item active">
+                            <h3>"Super site, vraiment génial !"</h3>
+                            <h4>Candide thovex</h4>       
+                        </div>
+                          <div class="carousel-item">
+                            <h3>"Je trouve mon chemin beaucoup plus <br>facilement grace à WeSki !"</h3>
+                            <h4>Le Yéti</h4>       
+                        </div>
+                          <div class="carousel-item">
+                            <h3>"J'ai l'impression de redécouvrir ma station<br> sans skieur "</h3>
+                            <h4>Un utilisateur anonyme surpayé</h4>       
+                        </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#myCarousel" data-slide="prev" role="button">
+                        <span class="fas fa-chevron-left fa-2x"></span>
+                    </a>
+                    <a class="carousel-control-next" href="#myCarousel" data-slide="next" role="button">
+                        <span class="fas fa-chevron-right fa-2x"></span>
+                    </a>
+                
+                </div>
+            
+            </div>
         
         
-        <footer>
-             <div class = "wrapper">
-                 <h1>We Ski<span class = "blue">.</span></h1>
-                 <div class = "copyright">Copyright © Tous droits réservés.   </div>
+        
+
+        
+       
+   <section id ="Contact">
+       <footer  class="text-center">
+            <a href="#about">                    
+                <span class="fas fa-chevron-up"></span>
+            </a>
+            <h3>Contactez-Nous</h3>
+                <p>Chez We Ski nous savons que skier et profiter sont vos priorités.<br>N'hésitez pas à nous poser la moindre question par rapport à notre outils et nous proposer des évolutions</p>
+                
+         <form id ="form_1">
+              <div class="form-group">
+                <label for="exampleInputEmail1">Email</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">    
+              </div>
+              <div class="form-group">
+                <label for="exampleInputPassword1">Nom</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Nom">
+              </div>
+             <div class="form-group">
+                    <label for="exampleFormControlTextarea1">Votre avis</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
              </div>
-        </footer>
-    </body>
-        
+              <div id = "div_footer" class="form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label" for="exampleCheck1">Check me out</label>
+              </div>
+                         <br>
+              <button type="submit" class="btn btn-primary">Submit</button>
+             
+              
+             </div>
+            
+            </form><br>
+
+            <h5>© WE-SKI.COM</h5>
+        </footer
+       </section>
+
+      
+  </body>
     
-    
-    
-</html>
-</DOCTYPE>
+</html> 
