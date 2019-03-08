@@ -2,17 +2,8 @@
 error_reporting(E_ERROR | E_WARNING | E_PARSE); // | E_NOTICE
 header('Access-Control-Allow-Origin: *');
 
-<<<<<<< HEAD:utils.php
 function pointsandways($restriction){
-    $rawData = readData("Ressources/data_arcs.txt");
-=======
-error_reporting(E_ERROR | E_WARNING | E_PARSE);
-
-function brut_force($start, $end){
-    $startTime = microtime(true); //count start
-
     $rawData = readData("../Ressources/data_arcs.txt");
->>>>>>> Site_v2:Calcul/utils.php
     if($rawData == false){return "Error while reading data file<br>";}
 
     $points = extractFromRaw($rawData);
@@ -40,20 +31,9 @@ function brut_force($start, $end, $restriction=array()){
     // the parameter 'maxlength of the way' is in the tellWays function
 }
 
-<<<<<<< HEAD:utils.php
 function dijkstra($start, $end, $restriction=array()){
     $startTime = microtime(true);
     require("dijkstra.php");
-=======
-function dijkstra($start, $end)
-{
-    require("dijkstra.php");
-    $rawData = readData("../Ressources/data_arcs.txt");
-    if($rawData == false){return "Error while reading data file<br>";}
-
-    $points = ExtractFromRaw($rawData);
-    if($points == false){return "Error fetching points<br>";}
->>>>>>> Site_v2:Calcul/utils.php
 
     [$points, $ways] = pointsandways($restriction);
 
@@ -333,11 +313,7 @@ function buildStatforWays($myWays, $ways, $points){
     $results = array();
     foreach($myWays as $myWay){
         $stats = buildStatforway($myWay, $ways, $points);
-<<<<<<< HEAD:utils.php
         array_push($results, array('ways'=>$myWay, 'totalMinuteTime'=>$stats['totalMinuteTime']));
-=======
-        array_push($results, array('ways'=>$myWay, 'stats'=>$stats));
->>>>>>> Site_v2:Calcul/utils.php
     }
     return $results;
 }
