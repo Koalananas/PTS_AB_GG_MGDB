@@ -1,53 +1,71 @@
 <?php
 error_reporting(E_ERROR | E_WARNING | E_PARSE); // | E_NOTICE
+header('Access-Control-Allow-Origin: *');
 
-error_reporting(E_ERROR | E_WARNING | E_PARSE);
-
-function brut_force($start, $end){
-    $startTime = microtime(true); //count start
-
+function pointsandways($restriction){
     $rawData = readData("../Ressources/data_arcs.txt");
     if($rawData == false){return "Error while reading data file<br>";}
 
     $points = extractFromRaw($rawData);
     if($points == false){return "Error fetching points<br>";}
 
-    $ways = extractFromRaw($rawData);
+    $ways = extractFromRaw($rawData, $restriction);
     if($ways == false){return "Error fetching ways<br>";}
+
+    return [$points, $ways];
+}
+
+function brut_force($start, $end, $restriction=array()){
+    $startTime = microtime(true); //count start
+
+    [$points, $ways] = pointsandways($restriction);
 
     $myWays = tellWays($ways, $start, $end); //returning all ways(a way is list of path), the way is composed of numbers paths
     $myWaysAndStats = buildStatforWays($myWays, $ways, $points);
 
     $stopTime = microtime(true);
-    echo 'Time clapsed : '. ($stopTime - $startTime).' s<br>';
-    echo_pre($myWaysAndStats);
+    $myWaysAndStats['description']="Chaque index numeroté de l'objet principal correspond à une possibilité de chemin à prendre pour aller du  point a au point b.\n
+    La liste de ways sont les chemins successif à prendre, totalMinuteTime est le nombre de minute pour relier le point a au point b via les chemins listés avant.";
+    $myWaysAndStats['computeTimeInS']=$stopTime - $startTime;
+    return($myWaysAndStats);
     // the parameter 'maxlength of the way' is in the tellWays function
 }
 
-function dijkstra($start, $end)
-{
+function dijkstra($start, $end, $restriction=array()){
+    $startTime = microtime(true);
     require("dijkstra.php");
-    $rawData = readData("../Ressources/data_arcs.txt");
-    if($rawData == false){return "Error while reading data file<br>";}
 
-    $points = ExtractFromRaw($rawData);
-    if($points == false){return "Error fetching points<br>";}
-
-    $ways = ExtractFromRaw($rawData);
-    if($ways == false){return "Error fetching ways<br>";}
+    [$points, $ways] = pointsandways($restriction);
 
     $graph = array();
-    foreach($ways as $way){
+    /*foreach($ways as $way){
         $ptA = $way[3];
         $ptB = $way[4];
         $cost = timeForWay($way[0], $ways, $points);
         $graph[intval($ptA)][intval($ptB)] = intval($cost); 
     }
 
-
+    echo_pre($graph);
+    $graph = array();*/
+    foreach($ways as $way){ //keep only shortest path for the way between two points
+        $ptA = $way[3];
+        $ptB = $way[4];
+        $cost = timeForWay($way[0], $ways, $points);
+        if(isset($graph[intval($ptA)][intval($ptB)])){
+            if($graph[intval($ptA)][intval($ptB)]>intval($cost)){
+                $graph[intval($ptA)][intval($ptB)] = intval($cost);
+            }
+        }
+        else{
+            $graph[intval($ptA)][intval($ptB)] = intval($cost);
+        }
+         
+    }
     $mydisjkstra = new Dijkstra($graph);
     $res = $mydisjkstra->shortestPaths($start, $end)[0];
+    //echo_pre($res);
     $sol = array();
+    $sol['ways'] = array();
     for($i =0; $i<count($res)-1; $i++){
         $s = $res[$i];
         $e = $res[$i+1];
@@ -60,12 +78,16 @@ function dijkstra($start, $end)
                 $w = $way[0];
             }
         }
-        array_push($sol, $w);
+        $sol['totalMinuteTime'] += $lowercost;
+        array_push($sol['ways'], $w);
     }
 
-    print_r($sol);
     $stopTime = microtime(true);
-    echo 'Time clapsed : '. ($stopTime - $startTime).' s<br>';
+    $res = [$sol];
+    $res['description']="L'index 0 de cette objet donne la suite de chemin à prendre pour aller du point a au point b le plus rapidement avec Dijkstra";
+    $res['computeTimeInS']=$stopTime - $startTime;
+    return($res);
+
 }
 
 function tellWays($ways, $start, $end){//return a string of row, each row contains a list of way, each row is a possible path to go from 'start' to 'end'
@@ -102,6 +124,7 @@ function findWays($ways, $start, $end, $queue, $step, $maxLength){//function use
             /*
                 2,3,29,37,32,69,54,11,17,93 (wrong) -> 2,37,69,54,17,93 (right)
             */
+
             for($i = 0; $i < count($queue); $i++){
                 if($i+1<count($queue)){
                     $now1 =$queue[$i]['nuWay']-1;
@@ -152,19 +175,25 @@ function readData($path){//return a file from the path
     return false;
 }
 
-function extractFromRaw($rawData){//extract line of a file formated like 'data_arcs.txt'
+function extractFromRaw($rawData, $restriction=array()){//extract line of a file formated like 'data_arcs.txt'
+    if(in_array("P", $restriction)){array_push($restriction, "TPH", "TC", "TSD", "TS", "TK", "BUS");}
     $points = array();
     $nbPoints = fgets($rawData);
     for($i = 0; $i< $nbPoints; $i++){
         $line = fgets($rawData);
         $infoLine = explode ("\t",$line);
-        if(count($infoLine) == 3){
+        if($infoLine[3] == ""){
             array_push($points, array($infoLine[0], $infoLine[1], $infoLine[2]));
         }
-        if(count($infoLine) == 5){
-            array_push($points, array($infoLine[0], $infoLine[1], $infoLine[2], $infoLine[3], $infoLine[4]));
+        else{
+            if(in_array($infoLine[2], $restriction))
+            {
+                array_push($points, array($infoLine[0], $infoLine[1], $infoLine[2], $infoLine[3], $infoLine[4]));
+            }
+            else{
+                array_push($points, array($infoLine[0], $infoLine[1], $infoLine[2], -1, -1));
+            }
         }
-        else {return false;}
 
     }
     return $points;
@@ -254,7 +283,7 @@ function timeForWay($numberWay, $ways, $points){
                 return 30;
             }
             else{
-                echo "Error while findWaysing BUS station with n° " . $numberWay . " transport : " . $myWay[2]."<br>";
+                //echo "Error while findWaysing BUS station with n° " . $numberWay . " transport : " . $myWay[2]."<br>";
                 return false;
             }
         default:
@@ -284,8 +313,152 @@ function buildStatforWays($myWays, $ways, $points){
     $results = array();
     foreach($myWays as $myWay){
         $stats = buildStatforway($myWay, $ways, $points);
-        array_push($results, array('ways'=>$myWay, 'stats'=>$stats));
+        array_push($results, array('ways'=>$myWay, 'totalMinuteTime'=>$stats['totalMinuteTime']));
     }
     return $results;
 }
+
+function dataForFold($points, $ways){
+
+    $graph = array();
+
+    foreach($ways as $way){
+        $ptA = $way[3];
+        $ptB = $way[4];
+        $cost = timeForWay($way[0], $ways, $points);
+        $flow = $cost; //temp
+        $graph[intval($ptA)][intval($ptB)] +=  intval($cost);
+
+    }
+
+    $maxi = count($graph);
+    foreach($graph as $key => $row){
+        if(intval($key) > $maxi ){
+            $maxi = intval($key);
+        }
+        foreach($row as $path => $poid){
+            if(intval($path) >$maxi){
+                $maxi = intval($path);
+            }
+        }
+    }
+
+    $data = array();
+    for($i = 0; $i< $maxi; $i++){
+        $temp = array();
+        for($j = 0; $j< $maxi; $j++){
+            array_push($temp, 0);
+        }
+        array_push($data, $temp);
+    }
+    foreach($graph as $key => $row){
+        $temp = array();
+        for($j = 0; $j< $maxi; $j++){
+            array_push($temp, 0);
+        }
+        foreach($row as $path => $poid){
+            $temp[intval($path)-1] = $poid;
+        }
+        $data[$key-1] = $temp;
+    }
+    return $data;
+}
+
+function threedimForFold($points, $ways){
+
+    $graph = array();
+    foreach($ways as $way){
+        $ptA = $way[3];
+        $ptB = $way[4];
+        $cost = timeForWay($way[0], $ways, $points);
+        $val = array("way"=>$way[0], "flow"=>$cost); //3dimension array with last dim are num of ways + flow available
+
+        if(isset($graph[intval($ptA)][intval($ptB)])){
+            array_push($graph[intval($ptA)][intval($ptB)], $val);
+        }
+        else{
+            $graph[intval($ptA)][intval($ptB)] = array($val);
+        }
+
+    }//now we have got a 3 dimension array, lets fill the empty values with 0
+
+    $maxi = count($graph);
+    foreach($graph as $key => $row){
+        if(intval($key) > $maxi ){
+            $maxi = intval($key);
+        }
+        foreach($row as $direction => $solutions){
+            foreach($solutions as $path => $flow)
+            {
+                if(intval($path) >$maxi){
+                    $maxi = intval($path);
+                }
+            }
+        }
+    }
+
+    $data = array();
+    for($i = 0; $i< $maxi; $i++){
+        $temp = array();
+        for($j = 0; $j< $maxi; $j++){
+            array_push($temp, 0);
+        }
+        array_push($data, $temp);
+    }
+    foreach($graph as $key => $row){
+        $temp = array();
+        for($j = 0; $j< $maxi; $j++){
+            array_push($temp, 0);
+        }
+        foreach($row as $direction => $solutions){
+            $temp[intval($direction)-1] = $solutions;
+        }
+        $data[$key-1] = $temp;
+    }
+
+    return $data;
+}
+function FordFulkerson($s, $e, $restriction=array()){
+    $startTime = microtime(true);
+    require("FordFulkerson.php");
+
+    [$points, $ways] = pointsandways($restriction);
+
+    $data = dataForFold($points, $ways);
+    
+    $g = new Graph($data);
+
+    $sols = $g->FordFulkerson($s, $e);
+    
+    for($j=0; $j<count($sols)-1; $j++){
+        $res = $sols[$j]["points"];
+        $sol = array();
+
+        for($i =0; $i<count($res)-1; $i++){
+            $s = $res[$i];
+            $e = $res[$i+1];
+    
+            $w = array();
+            foreach($ways as $way){
+                if(intval($s) == intval($way[3]) && intval($e) == intval($way[4])){
+                    array_push($w, $way[0]);
+                }
+            }
+            array_push($sol, $w);
+        }
+        $sols[$j]["ways"] = $sol;
+    }
+
+    $sols["description"] = "Pour aller du point a au point b, vous avez autant de suite de points possible que d'index dans le tableau de première dimension (autre que 
+    'maxflow' et 'utilisation')\n
+    Dans chaque index du premier tableau la cle ways vous indique quels chemins prendre, si les sous tableaux de 'ways' contiennent une seule 
+    valeur c'est qu'il n'y a qu'un chemin qui relie deux points intermediaire, il y a autant de chemins reliant les deux points que de valeurs 
+    dans le sous tableau en question.\n
+    En prenant un chemin proposé dans chaque sous tableau de 'ways' vous relierez les points a et b\n
+    La cle flow indique la capacite totale de tout les chemins reliant les points a et b";
+    $stopTime = microtime(true);
+    $sols['computeTimeInS']=$stopTime - $startTime;
+    return($sols);
+}
+ //reste à faire :  utiliser de vraies valeurs pour fordfulkerson ie pas les temps pour faire les chemins mais de vraies capacité de flow
 ?>
