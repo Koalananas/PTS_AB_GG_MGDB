@@ -43,7 +43,7 @@
     </nav>
     
     
-      <section id = "saisie" class = "container">
+        <section id = "saisie" class = "container">
           <div class="row justify-content-center">
             <form class ="form-inline" action = "" method="get">
           
@@ -61,28 +61,51 @@
               </form>
           </div>
         
-      </section>
-      
+        </section>
+        
       
        <br>Results : <br><br>
-<section id ="Trajets">
-        <?php
-            include('utils.php');
-            $s = 5;
-            $e = 1;
-            if(isset($_GET['start']) && isset($_GET['end'])){
-                $s = $_GET['start'];
-                $e = $_GET['end'];
-            }
+        <section id ="Trajets">
+                <?php
+                    include('Calcul/utils.php');
 
-            brut_force($s,$e);
+                    if(isset($_GET['start']) && isset($_GET['end']) && isset($_GET['methode'])){
+                        $s = $_GET['start'];
+                        $e = $_GET['end'];
+                        $m = $_GET['methode'];
+                    }
+                    else{
+                        echo '{"wrong input"}';
+                        die();
+                    }
+                    $r = ["V", "B", "R", "N", "KL", "SURF", "P"];
+                    if(isset($_GET['restriction']) ){
+                        $r = explode(",", $_GET['restriction']);
+                    }
+                    $res = null;
+                    switch($m){
+                        case "d":
+                            $res = dijkstra($s,$e, $r);
+                            $res["methode"] = "Dijkstra";
+                            break;
+                        case "f":
+                            $res = FordFulkerson($s,$e, $r);
+                            $res["methode"] = "FordFulkerson";
+                            break;
+                        default:
+                            $res = brut_force($s,$e, $r);
+                            $res["methode"] = "Brute Force";
+                            break;
+                    }
+                    $res["query"] = $_GET;
+                    echo json_encode($res);
+                    if(isset($_GET["debug"])){
+                        echo "<br><br>";
+                        echo_pre($res);
+                    }
+                ?>
 
-            echo '<br\><br\><br\>';
-
-            dijkstra($s,$e);
-        ?>
-
-</section>  
+        </section>  
             
           
          <section id="portfolio">
@@ -94,17 +117,17 @@
                 <div class="row">
                     <div class="col-md-4">
                         <a href="http://www.facebook.com" target="_blank">
-                            <img class="img-thumbnail" src="../images/facebook_share.png" alt="facebook share">
+                            <img class="img-thumbnail" src="images/facebook_share.png" alt="facebook share">
                         </a>
                     </div>
                      <div class="col-md-4">
                         <a href="http://www.google.com" target="_blank">
-                            <img class="img-thumbnail" src="../images/google_translate.png" alt="google translate">
+                            <img class="img-thumbnail" src="images/google_translate.png" alt="google translate">
                         </a>
                     </div>
                      <div class="col-md-4">
                         <a href="http://www.twitter.com" target="_blank">
-                            <img class="img-thumbnail" src="../images/twitter_video.png" alt="twitter video">
+                            <img class="img-thumbnail" src="images/twitter_video.png" alt="twitter video">
                         </a>
                     </div>
                 </div>
@@ -112,17 +135,17 @@
                     <div class="col-md-4">
                         <a href="http://www.google.com" target="_blank">
                             <img class="img-thumbnail" 
-                           src="../images/youtube.png" alt="youtube">
+                           src="images/youtube.png" alt="youtube">
                         </a>
                     </div>
                      <div class="col-md-4">
                         <a href="http://www.twitter.com" target="_blank">
-                            <img class="img-thumbnail" src="../images/twitter_retweet.png" alt="twitter retweet">
+                            <img class="img-thumbnail" src="images//twitter_retweet.png" alt="twitter retweet">
                         </a>
                     </div>
                      <div class="col-md-4">
                         <a href="http://www.facebook.com" target="_blank">
-                            <img class="img-thumbnail" src="../images/facebook_video.png" alt="facebook video">
+                            <img class="img-thumbnail" src="images/facebook_video.png" alt="facebook video">
                         </a>
                     </div>
                 </div>

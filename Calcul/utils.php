@@ -3,7 +3,7 @@ error_reporting(E_ERROR | E_WARNING | E_PARSE); // | E_NOTICE
 header('Access-Control-Allow-Origin: *');
 
 function pointsandways($restriction){
-    $rawData = readData("../Ressources/data_arcs.txt");
+    $rawData = readData("Ressources/data_arcs.txt");
     if($rawData == false){return "Error while reading data file<br>";}
 
     $points = extractFromRaw($rawData);
