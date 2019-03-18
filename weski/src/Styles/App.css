@@ -1,0 +1,37 @@
+.App {
+  text-align: center;
+  flex-direction: column;
+  display:flex;
+  background-color: #282c34;
+  min-height: 100vh;
+}
+
+.Journeys {
+  font-size: calc(10px + 2vmin);
+  color: white;
+  padding-top: 50px;
+  padding-left:150px;
+  padding-right:150px;
+  flex:10;
+}
+
+.App-header {
+  flex-direction:column;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  padding-top: 20px;
+  flex:2;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

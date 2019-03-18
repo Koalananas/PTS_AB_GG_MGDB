@@ -24,9 +24,9 @@ function brut_force($start, $end, $restriction=array()){
     $myWaysAndStats = buildStatforWays($myWays, $ways, $points);
 
     $stopTime = microtime(true);
-    $myWaysAndStats['description']="Chaque index numeroté de l'objet principal correspond à une possibilité de chemin à prendre pour aller du  point a au point b.\n
-    La liste de ways sont les chemins successif à prendre, totalMinuteTime est le nombre de minute pour relier le point a au point b via les chemins listés avant.";
+    $myWaysAndStats['description']="Chaque index numerote de l objet principal correspond a une possibilie de chemin a prendre pour aller du  point a au point b La liste de ways sont les chemins successif a prendre, totalMinuteTime est le nombre de minute pour relier le point a au point b via les chemins lists avant.";
     $myWaysAndStats['computeTimeInS']=$stopTime - $startTime;
+
     return($myWaysAndStats);
     // the parameter 'maxlength of the way' is in the tellWays function
 }
@@ -84,7 +84,7 @@ function dijkstra($start, $end, $restriction=array()){
 
     $stopTime = microtime(true);
     $res = [$sol];
-    $res['description']="L'index 0 de cette objet donne la suite de chemin à prendre pour aller du point a au point b le plus rapidement avec Dijkstra";
+    $res['description']="L'index 0 de cette objet donne la suite de chemin a prendre pour aller du point a au point b le plus rapidement avec Dijkstra";
     $res['computeTimeInS']=$stopTime - $startTime;
     return($res);
 
@@ -450,15 +450,13 @@ function FordFulkerson($s, $e, $restriction=array()){
     }
 
     $sols["description"] = "Pour aller du point a au point b, vous avez autant de suite de points possible que d'index dans le tableau de première dimension (autre que 
-    'maxflow' et 'utilisation')\n
-    Dans chaque index du premier tableau la cle ways vous indique quels chemins prendre, si les sous tableaux de 'ways' contiennent une seule 
+    'maxflow' et 'utilisation') Dans chaque index du premier tableau la cle ways vous indique quels chemins prendre, si les sous tableaux de 'ways' contiennent une seule 
     valeur c'est qu'il n'y a qu'un chemin qui relie deux points intermediaire, il y a autant de chemins reliant les deux points que de valeurs 
-    dans le sous tableau en question.\n
-    En prenant un chemin proposé dans chaque sous tableau de 'ways' vous relierez les points a et b\n
+    dans le sous tableau en question En prenant un chemin propose dans chaque sous tableau de 'ways' vous relierez les points a et b
     La cle flow indique la capacite totale de tout les chemins reliant les points a et b";
     $stopTime = microtime(true);
     $sols['computeTimeInS']=$stopTime - $startTime;
     return($sols);
 }
- //reste à faire :  utiliser de vraies valeurs pour fordfulkerson ie pas les temps pour faire les chemins mais de vraies capacité de flow
+ //reste a faire :  utiliser de vraies valeurs pour fordfulkerson ie pas les temps pour faire les chemins mais de vraies capacité de flow
 ?>
