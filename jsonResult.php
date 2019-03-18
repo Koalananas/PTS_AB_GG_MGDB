@@ -1,5 +1,5 @@
 <?php
-    include('utils.php');
+    include('Calcul/utils.php');
 
     if(isset($_GET['start']) && isset($_GET['end']) && isset($_GET['methode'])){
         $s = $_GET['start'];
@@ -30,7 +30,7 @@
             break;
     }
     $res["query"] = $_GET;
-    echo json_encode($res);
+    echo json_encode($res,JSON_NUMERIC_CHECK);
     if(isset($_GET["debug"])){
         echo "<br><br>";
         echo_pre($res);

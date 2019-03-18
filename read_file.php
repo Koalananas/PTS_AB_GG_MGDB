@@ -69,7 +69,7 @@
        <br>Results : <br><br>
         <section id ="Trajets">
                 <?php
-                    include('./../../Calcul/utils.php');
+                    include('Calcul/utils.php');
 
                     if(isset($_GET['start']) && isset($_GET['end']) && isset($_GET['methode'])){
                         $s = $_GET['start'];

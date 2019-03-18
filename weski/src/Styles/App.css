@@ -1,22 +1,26 @@
 .App {
   text-align: center;
+  flex-direction: column;
+  display:flex;
+  background-color: #282c34;
+  min-height: 100vh;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+.Journeys {
+  font-size: calc(10px + 2vmin);
+  color: white;
+  padding-top: 50px;
+  padding-left:150px;
+  padding-right:150px;
+  flex:10;
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  flex-direction:column;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding-top: 20px;
+  flex:2;
 }
 
 .App-link {

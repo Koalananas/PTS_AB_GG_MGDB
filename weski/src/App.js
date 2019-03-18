@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './Styles/App.css';
-import InputCase from './Components/InputCase'
+import CardContainer from './Components/CardContainer';
 
 
 class App extends Component {
@@ -13,10 +13,8 @@ class App extends Component {
   render() {
 
     return (
-      <div className="App">
-        <header className="App-header">
-          <InputCase/>
-        </header>
+      <div >
+        <CardContainer/>
       </div>
     );
   }

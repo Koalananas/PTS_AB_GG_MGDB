@@ -1,0 +1,35 @@
+
+
+  .Card {
+    background-color: #3f3f3f;
+    flex-direction:row;
+    display:flex;
+    justify-content: space-around;
+    height:100px;
+  }
+
+  .Journey {
+    flex:5;
+    display:flex;
+  }
+  .Bouton {
+    flex:1;
+  }
+
+  .Infos {
+    flex:2;
+    display:flex;
+    flex-direction: column;
+  }
+  .Parcours {
+    flex:2;
+  }
+
+  .Criteres {
+    flex:3;
+    padding:6px;
+  }
+  .Specifiques {
+    flex:2;
+    padding:6px;
+  }
