@@ -16,11 +16,11 @@ class Card extends React.Component {
         var result = 'Tous chemins';
         if(methode === 'FordFerkuson')
         {
-            result = 'Chemin le plus rapide'
+            result = 'Chemin le plus court'
         }
         else if(methode === 'Dijkstra')
         {
-            result = 'Chemin le plus coourt'
+            result = 'Chemin le plus rapide'
         }
         else {      
             result = 'Tous chemins'
@@ -32,31 +32,37 @@ class Card extends React.Component {
 
     render() {
         const data = this.props.data;
-        const {query, description} = data;
+        const {query} = data;
             return(
-                <div className='Card'>
-                    <div className='Journey'>
-                        <div className='Infos'>
-                            <div className='Criteres'>
-                                {"Départ : "+ query.start }<br/>
-                                {" Destination : " + query.end} <br/><br/>
-                                <div className='Methodes'>
-                                    {" Methode : " + this.methodeConversion(query.methode)}
+                <div>
+                    <div className='Card'>
+                        <div className='Journey'>
+                            <div className='Infos'>
+                                <div className='Criteres'>
+                                    {"Départ : "+ query.start }<br/>
+                                    {" Destination : " + query.end} <br/><br/>
+                                    <div className='Methodes'>
+                                        {" Methode : " + this.methodeConversion(query.methode)}
+                                    </div>
+                                </div>
+                                <div className='Specifiques'>
+                                {data && data[this.props.index] && data[this.props.index].totalMinuteTime && 
+                                    ('Duration : ' + data[this.props.index].totalMinuteTime + ' minutes')}
+                                    {(!data || !data[this.props.index] || !data[this.props.index].totalMinuteTime) && ('Aucun résultat trouvé') }
                                 </div>
                             </div>
-                            <div className='Specifiques'>
-                                {'Duration : ' + data[this.props.index].totalMinuteTime + ' micros'}
+                            <div className='Parcours'>Parcours : <br/>
+                                {data && data[this.props.index] && data[this.props.index].ways && <p className='Etapes'>
+                                    {query.start +' -> '+ data[this.props.index].ways.map(way => way + ' -> ') +  query.end}
+                                </p>}
+                                {(!data || !data[this.props.index] || !data[this.props.index].ways) &&  ('Aucun résultat trouvé') }
                             </div>
                         </div>
-                        <div className='Parcours'>Parcours : <br/>
-                            <p className='Etapes'>
-                                {query.start +' -> '+ data[this.props.index].ways.map(way => way + ' -> ') +  query.end}
-                            </p>
-                        </div>
+                        <button className='Bouton'>
+                            Aller à
+                        </button>
                     </div>
-                    <button className='Bouton'>
-                        Aller à
-                    </button>
+                    <br/>
                 </div>
             );
         }

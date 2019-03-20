@@ -1,5 +1,6 @@
 <?php
     include('Calcul/utils.php');
+    header('Content-type: application/JSON; charset=ANSI');
 
     if(isset($_GET['start']) && isset($_GET['end']) && isset($_GET['methode'])){
         $s = $_GET['start'];
