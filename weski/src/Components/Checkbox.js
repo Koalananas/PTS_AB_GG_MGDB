@@ -23,13 +23,14 @@ class Checkbox extends Component {
 
     return (
         <label>
+          &nbsp;
           <input
                             type="checkbox"
                             value={label}
                             checked={isChecked}
                             onChange={this.toggleCheckboxChange}
                         />
-
+          &nbsp;
           {label}
         </label>
     );

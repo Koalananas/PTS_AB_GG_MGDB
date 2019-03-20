@@ -5,15 +5,17 @@
     flex-direction:row;
     display:flex;
     justify-content: space-around;
-    height:100px;
+    border-radius: 10px 10px;
   }
 
   .Journey {
     flex:5;
     display:flex;
+    border:3px outset rgb(88, 88, 88);
   }
   .Bouton {
     flex:1;
+    border-radius: 10px 10px;
   }
 
   .Infos {
@@ -22,14 +24,36 @@
     flex-direction: column;
   }
   .Parcours {
-    flex:2;
+    flex:6;
+  }
+
+  .Etapes {
+    font-size:18px;
   }
 
   .Criteres {
+    text-align: left;
     flex:3;
+    font-size:17px;
     padding:6px;
   }
   .Specifiques {
     flex:2;
     padding:6px;
+    text-align:left;
+    font-size:9px;
   }
+
+  .Methodes {
+    font-weight:bold;
+    font-size:13px;
+    text-align: left;
+  }
+
+
+
+.Bouton {
+  font-size: 20px;
+  color: black;
+  flex:0.75;
+}
