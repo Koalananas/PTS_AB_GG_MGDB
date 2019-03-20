@@ -4,9 +4,12 @@ import Checkbox from './Checkbox';
 import './../Styles/App.css';
 
 const items = [
-  'One',
-  'Two',
-  'Three',
+
+  'Tous',
+  'Vertes',
+  'Bleus',
+  'Rouges',
+  'Noires'
 ];
 
 class CardContainer extends Component {
@@ -21,11 +24,12 @@ class CardContainer extends Component {
       };
   
       this.handleOriginChange = this.handleOriginChange.bind(this);
-      this.handleDestinatioonChange = this.handleDestinatioonChange.bind(this);
+      this.handleDestinationChange = this.handleDestinationChange.bind(this);
       this.handleJourneyTypeChange = this.handleJourneyTypeChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
       this.parseUrl  = this.parseUrl.bind(this);
       this.callMamp  = this.callMamp.bind(this);
+      this.buildUrl = this.buildUrl.bind(this);
     }
 
     componentDidMount(){
@@ -45,7 +49,7 @@ class CardContainer extends Component {
       }
     }
 
-    parseUrl(start,end, methode){
+    buildUrl(start,end, methode){
       let url = "http://localhost:8888/PTS_AB_GG_MGDB/jsonResult.php?"
       if(start > 0 && start < 25) {
         url += 'start=' + start + '&';
@@ -67,9 +71,7 @@ class CardContainer extends Component {
       // if(restriction !== null){
 
       // }
-      const jsonResult = this.callMamp(url);
-      console.log('url',url);
-      return jsonResult;
+      return url;
     }
 
     callMamp(url) {
@@ -77,29 +79,35 @@ class CardContainer extends Component {
       xhttp.open("GET", url,false);
 
       xhttp.send();
-      console.log('xhttp',xhttp);
 
-      //var obj = xhttp.responsesText;
-      //var obj = JSON.stringify(xhttp.response);
-      var parse = JSON.parse('{"0":{"ways":[2,3,4,5,71,68,73,69,54],"totalMinuteTime":115.55999999999999},"1":{"ways":[2,3,4,68,73,69,54],"totalMinuteTime":101.05999999999999},"2":{"ways":[2,3,73,32,31,69,54],"totalMinuteTime":87.98},"3":{"ways":[2,3,73,69,54],"totalMinuteTime":57.46000000000001},"4":{"ways":[2,37,32,31,69,54],"totalMinuteTime":81.72},"5":{"ways":[2,37,69,54],"totalMinuteTime":51.2},"6":{"ways":[6,1,2,3,73,69,54],"totalMinuteTime":89.26},"7":{"ways":[6,1,2,37,69,54],"totalMinuteTime":83},"8":{"ways":[6,36,54],"totalMinuteTime":33.38},"9":{"ways":[6,50,75,54],"totalMinuteTime":38.88},"description":"Chaque index numerote de lobjet principal correspond a une possibilie de chemin a prendre pour aller du  point a au point b  La liste de ways sont les chemins successif a prendre, totalMinuteTime est le nombre de minute pour relier le point a au point b via les chemins lists avant.","computeTimeInS":0.0067708492279052734,"methode":"Brute Force","query":{"start":"5","end":"10","methode":"b"}}');
-      var parse1 = xhttp.responseText;
+      var parse = xhttp.responseText;
       console.log('Brut',parse);
-      console.log('ResponseText',parse1);
       return parse;
+    }
+
+    parseUrl(start,end,methode) {
+      const url = this.buildUrl(start, end, methode);
+      const jsonResult = this.callMamp(url);
+      console.log('url',url);
+      console.log('json',jsonResult);
+      const jsonReact = jsonResult;
+      //const jsonReact = JSON.parse('{"0":{"ways":[2,3,4,5,71,68,73,69,54],"totalMinuteTime":115.55999999999999},"1":{"ways":[2,3,4,68,73,69,54],"totalMinuteTime":101.05999999999999},"2":{"ways":[2,3,73,32,31,69,54],"totalMinuteTime":87.98},"3":{"ways":[2,3,73,69,54],"totalMinuteTime":57.46000000000001},"4":{"ways":[2,37,32,31,69,54],"totalMinuteTime":81.72},"5":{"ways":[2,37,69,54],"totalMinuteTime":51.2},"6":{"ways":[6,1,2,3,73,69,54],"totalMinuteTime":89.26},"7":{"ways":[6,1,2,37,69,54],"totalMinuteTime":83},"8":{"ways":[6,36,54],"totalMinuteTime":33.38},"9":{"ways":[6,50,75,54],"totalMinuteTime":38.88},"description":"Chaque index numerote de l objet principal correspond a une possibilie de chemin a prendre pour aller du  point a au point b La liste de ways sont les chemins successif a prendre, totalMinuteTime est le nombre de minute pour relier le point a au point b via les chemins lists avant.","computeTimeInS":0.0077478885650634766,"methode":"Brute Force","query":{"start":5,"end":10,"methode":"b"}}');
+      //const jsonReact = JSON.parse('{"0":{"ways":[17,93,5],"totalMinuteTime":28.1},"description":"L'index 0 de cette objet donne la suite de chemin a prendre pour aller du point a au point b le plus rapidement avec Dijkstra","computeTimeInS":0.012394905090332031,"methode":"Dijkstra","query":{"start":10,"end":1,"methode":"d"}}');
+      console.log('Jsonreact',jsonReact);
+      //return jsonReact;
+
     }
   
     handleOriginChange(event) {
-      const startInput = event.target.value;
   
       this.setState({
-        start: startInput
+        start: event.target.value
       });
     }
-    handleDestinatioonChange(event) {
-      const startInput = event.target.value;
+    handleDestinationChange(event) {
   
       this.setState({
-        end: startInput
+        end: event.target.value
       });
     }
 
@@ -109,13 +117,15 @@ class CardContainer extends Component {
 
     handleSubmit(event) {
       event.preventDefault();
-  
+      
+      console.log(this.state);
   
       for (const checkbox of this.selectedCheckboxes) {
         console.log(checkbox, 'is selected.');
       }
-      const {start, end, methode} = event.target;
+      const {start, end, methode} = this.state;
       const json = this.parseUrl(start,end,methode);
+      console.log('json',json)
 
     }
 
@@ -143,7 +153,7 @@ class CardContainer extends Component {
           <header className='App-header'>
             <form onSubmit={this.handleSubmit}>
               <label>
-                Origine :  &nbsp;&nbsp;
+                Départ :  &nbsp;
                 <input
                   name='start'
                   type='number'
@@ -152,32 +162,35 @@ class CardContainer extends Component {
                   onChange={this.handleOriginChange} />
               </label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <label>
-                Destination : &nbsp;&nbsp;
+                Destination : &nbsp;
                 <input
                   name='end'
                   type='number'
                   value={end}
                   placeholder={'Chiffres entre 1 et 20'}
-                  onChange={this.handleDestinatioonChange} />
+                  onChange={this.handleDestinationChange} />
               </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <br/>
+              <br/>
               <label>
-                Type de trajet : &nbsp;&nbsp;
+                Type de trajet : &nbsp;
                 <select value={methode} onChange={this.handleJourneyTypeChange}>
                   <option value='BrutPower'>Tous chemins</option>
                   <option value='Dijkstra'>Le plus rapide</option>
                   <option value='FordFerkuson'>Le plus court</option>
                 </select>
-              </label>&nbsp;&nbsp;&nbsp;&nbsp;
+              </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <label>
                 Restrictions : &nbsp;
                   {this.createCheckboxes()}
               </label>&nbsp;&nbsp;&nbsp;&nbsp;
-              <button className="btn btn-default" type="submit">Save</button>
+              <br/> 
+              <br/>
+              <button className="Bouton" type="submit">Rechercher</button>
             </form>
           </header>
 
           <div className='Journeys'>
-            <Card data={json} start={start} end={end} methode={methode}/>
           </div>
         </div>
       );

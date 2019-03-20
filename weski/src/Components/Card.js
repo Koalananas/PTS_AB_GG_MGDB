@@ -1,6 +1,7 @@
 import React from 'react';
 import './../Styles/Card.css';
 
+
 class Card extends React.Component {
     constructor(props){
         super(props);
@@ -31,36 +32,36 @@ class Card extends React.Component {
 
     render() {
         const data = this.props.data;
-        var count = 0;
         const {query, description} = data;
-        while(this.props.data[count] !== 9){
-
-            console.log(count);
-            count = count +1;
             return(
                 <div className='Card'>
                     <div className='Journey'>
                         <div className='Infos'>
                             <div className='Criteres'>
-                                {"Origine : "+ query.start +  " Destination : " + query.end + " Methode : " + this.methodeConversion(query.methode)}
+                                {"Départ : "+ query.start }<br/>
+                                {" Destination : " + query.end} <br/><br/>
+                                <div className='Methodes'>
+                                    {" Methode : " + this.methodeConversion(query.methode)}
+                                </div>
                             </div>
                             <div className='Specifiques'>
-                                {description}
+                                {'Duration : ' + data[this.props.index].totalMinuteTime + ' micros'}
                             </div>
                         </div>
-                        <div className='Parcours'>
-                            {query.start +' ,'+ data[count].ways.map(way => way + ' ') +','+  query.end}
+                        <div className='Parcours'>Parcours : <br/>
+                            <p className='Etapes'>
+                                {query.start +' -> '+ data[this.props.index].ways.map(way => way + ' -> ') +  query.end}
+                            </p>
                         </div>
                     </div>
                     <button className='Bouton'>
-                        {}
+                        Aller à
                     </button>
                 </div>
-            )
+            );
         }
-        count = 0;
-    }
-};
+    };
+
 
 
 export default Card;
