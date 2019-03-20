@@ -17,9 +17,21 @@ class CardContainer extends Component {
     constructor(props) {
       super(props);
       this.state = {
+        onSubmit: false,
         start: '',
         end: '',
-        methode: 'BrutForce'
+        methode: 'BrutForce',
+        data:{
+            0:{
+              ways:  [],
+              totalMinuteTime:'',
+            },
+            query:{
+              start: '',
+              end:'',
+              methode:'',
+            },
+        }
         //isEnabled:  false
       };
   
@@ -30,6 +42,7 @@ class CardContainer extends Component {
       this.parseUrl  = this.parseUrl.bind(this);
       this.callMamp  = this.callMamp.bind(this);
       this.buildUrl = this.buildUrl.bind(this);
+      this.cards = this.cards.bind(this);
     }
 
     componentDidMount(){
@@ -51,10 +64,10 @@ class CardContainer extends Component {
 
     buildUrl(start,end, methode){
       let url = "http://localhost:8888/PTS_AB_GG_MGDB/jsonResult.php?"
-      if(start > 0 && start < 25) {
+      if(start > 0 && start < 96) {
         url += 'start=' + start + '&';
       }
-      if(end > 0 && end < 25) {
+      if(end > 0 && end < 96) {
         url += 'end=' + end + '&';
       }
       if(methode !== null){
@@ -90,11 +103,14 @@ class CardContainer extends Component {
       const jsonResult = this.callMamp(url);
       console.log('url',url);
       console.log('json',jsonResult);
-      const jsonReact = jsonResult;
-      //const jsonReact = JSON.parse('{"0":{"ways":[2,3,4,5,71,68,73,69,54],"totalMinuteTime":115.55999999999999},"1":{"ways":[2,3,4,68,73,69,54],"totalMinuteTime":101.05999999999999},"2":{"ways":[2,3,73,32,31,69,54],"totalMinuteTime":87.98},"3":{"ways":[2,3,73,69,54],"totalMinuteTime":57.46000000000001},"4":{"ways":[2,37,32,31,69,54],"totalMinuteTime":81.72},"5":{"ways":[2,37,69,54],"totalMinuteTime":51.2},"6":{"ways":[6,1,2,3,73,69,54],"totalMinuteTime":89.26},"7":{"ways":[6,1,2,37,69,54],"totalMinuteTime":83},"8":{"ways":[6,36,54],"totalMinuteTime":33.38},"9":{"ways":[6,50,75,54],"totalMinuteTime":38.88},"description":"Chaque index numerote de l objet principal correspond a une possibilie de chemin a prendre pour aller du  point a au point b La liste de ways sont les chemins successif a prendre, totalMinuteTime est le nombre de minute pour relier le point a au point b via les chemins lists avant.","computeTimeInS":0.0077478885650634766,"methode":"Brute Force","query":{"start":5,"end":10,"methode":"b"}}');
+      const jsonReact1 = JSON.parse(jsonResult);
+      //jsonReact = JSON.parse(jsonReact);
+
+      const jsonReact = '{"0":{"ways":[2,3,4,5,71,68,73,69,54],"totalMinuteTime":115.55999999999999},"1":{"ways":[2,3,4,68,73,69,54],"totalMinuteTime":101.05999999999999},"2":{"ways":[2,3,73,32,31,69,54],"totalMinuteTime":87.98},"3":{"ways":[2,3,73,69,54],"totalMinuteTime":57.46000000000001},"4":{"ways":[2,37,32,31,69,54],"totalMinuteTime":81.72},"5":{"ways":[2,37,69,54],"totalMinuteTime":51.2},"6":{"ways":[6,1,2,3,73,69,54],"totalMinuteTime":89.26},"7":{"ways":[6,1,2,37,69,54],"totalMinuteTime":83},"8":{"ways":[6,36,54],"totalMinuteTime":33.38},"9":{"ways":[6,50,75,54],"totalMinuteTime":38.88},"description":"Chaque index numerote de l objet principal correspond a une possibilie de chemin a prendre pour aller du  point a au point b La liste de ways sont les chemins successif a prendre, totalMinuteTime est le nombre de minute pour relier le point a au point b via les chemins lists avant.","computeTimeInS":0.006906986236572266,"methode":"Brute Force","query":{"start":5,"end":10,"methode":"b"}}';
       //const jsonReact = JSON.parse('{"0":{"ways":[17,93,5],"totalMinuteTime":28.1},"description":"L'index 0 de cette objet donne la suite de chemin a prendre pour aller du point a au point b le plus rapidement avec Dijkstra","computeTimeInS":0.012394905090332031,"methode":"Dijkstra","query":{"start":10,"end":1,"methode":"d"}}');
+      console.log('Jsonreact1',jsonReact1);
       console.log('Jsonreact',jsonReact);
-      //return jsonReact;
+      return jsonReact1;
 
     }
   
@@ -125,9 +141,24 @@ class CardContainer extends Component {
       }
       const {start, end, methode} = this.state;
       const json = this.parseUrl(start,end,methode);
-      console.log('json',json)
+      if((start > 0 && start < 96) && (end > 0 && end < 96))
+      {
+          this.setState({
+          data:json,
+          onSubmit:true
+        })
+      }
+
 
     }
+
+    cards(start,end,methode,data) {
+      for(var i = 0; i < 10; i++) {
+          return(
+            <Card data={data} index={i} start={start} end={end} methode={methode}/>
+          );
+      }
+    };
 
     createCheckbox = label => (
       <Checkbox
@@ -144,21 +175,26 @@ class CardContainer extends Component {
   
 
     render() {
-      
-      const {start, end, methode} = this.state;
-      const json = this.parseUrl(start,end,methode);
+      const {start, end, methode, data} = this.state;
+      let card =[];
+      for(var i = 0; i < 10; i++) {
+        if(data && data[i])
+          card.push(<Card data={data} index={i} start={start} end={end} methode={methode}/>)
+      }
 
       return (
         <div className='App'>
           <header className='App-header'>
+            <a href ="http://localhost:8888/PTS_AB_GG_MGDB/index.html#about">Retourner au site web</a>
             <form onSubmit={this.handleSubmit}>
+              <br/>
               <label>
                 Départ :  &nbsp;
                 <input
                   name='start'
                   type='number'
                   value={start}
-                  placeholder={'Chiffres entre 1 et 20'}
+                  placeholder={'Chiffres entre 1 et 95'}
                   onChange={this.handleOriginChange} />
               </label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <label>
@@ -167,7 +203,7 @@ class CardContainer extends Component {
                   name='end'
                   type='number'
                   value={end}
-                  placeholder={'Chiffres entre 1 et 20'}
+                  placeholder={'Chiffres entre 1 et 95'}
                   onChange={this.handleDestinationChange} />
               </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <br/>
@@ -191,6 +227,9 @@ class CardContainer extends Component {
           </header>
 
           <div className='Journeys'>
+          {this.state.onSubmit === true && !(this.state.data.query.methode === 'b') && <Card data={this.state.data} index={0} start={start} end={end} methode={methode}/>}
+
+          {(this.state.onSubmit === true && this.state.data.query.methode === 'b') && card}
           </div>
         </div>
       );
