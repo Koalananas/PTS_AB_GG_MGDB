@@ -13,12 +13,12 @@ class Card extends React.Component {
 
 
     methodeConversion(methode) {
-        var result = 'Tous chemins';
-        if(methode === 'FordFerkuson')
+        var result ="Tous chemin";
+        if(methode === "FordFulkerson")
         {
             result = 'Chemin le plus court'
         }
-        else if(methode === 'Dijkstra')
+        else if(methode === "Dijkstra")
         {
             result = 'Chemin le plus rapide'
         }
@@ -32,7 +32,11 @@ class Card extends React.Component {
 
     render() {
         const data = this.props.data;
+
         const {query} = data;
+
+
+        console.log(data.methode)
             return(
                 <div>
                     <div className='Card'>
@@ -42,20 +46,24 @@ class Card extends React.Component {
                                     {"Départ : "+ query.start }<br/>
                                     {" Destination : " + query.end} <br/><br/>
                                     <div className='Methodes'>
-                                        {" Methode : " + this.methodeConversion(query.methode)}
+                                        {" Methode : " + this.methodeConversion(data.methode)}
                                     </div>
                                 </div>
                                 <div className='Specifiques'>
                                 {data && data[this.props.index] && data[this.props.index].totalMinuteTime && 
                                     ('Duration : ' + data[this.props.index].totalMinuteTime + ' minutes')}
-                                    {(!data || !data[this.props.index] || !data[this.props.index].totalMinuteTime) && ('Aucun résultat trouvé') }
+                                    {data && data[this.props.index] && data[this.props.index].flow &&
+                                        ('Flux de personnes: ' + data[this.props.index].flow)}
+                                    {(!data || !data[this.props.index]) && ('Aucun résultat trouvé') }
                                 </div>
                             </div>
                             <div className='Parcours'>Parcours : <br/>
                                 {data && data[this.props.index] && data[this.props.index].ways && <p className='Etapes'>
                                     {query.start +' -> '+ data[this.props.index].ways.map(way => way + ' -> ') +  query.end}
                                 </p>}
-                                {(!data || !data[this.props.index] || !data[this.props.index].ways) &&  ('Aucun résultat trouvé') }
+                                {(!data || !data[this.props.index] || !data[this.props.index].ways)&& 
+                                    (!data[this.props.index].flow && !data[this.props.index].totalMinuteTime) &&  
+                                    ('Aucun résultat trouvé')}
                             </div>
                         </div>
                         <button className='Bouton'>

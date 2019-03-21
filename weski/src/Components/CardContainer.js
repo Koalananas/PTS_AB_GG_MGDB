@@ -3,13 +3,32 @@ import Card from './Card';
 import Checkbox from './Checkbox';
 import './../Styles/App.css';
 
-const items = [
-
-  'Tous',
-  'Vertes',
-  'Bleus',
-  'Rouges',
-  'Noires'
+const checkboxes = [
+  {
+    name: 'Tous',
+    key: 'Tous',
+    label: 'Tous',
+  },
+  {
+    name: 'Vertes',
+    key: 'Vertes',
+    label: 'Vertes',
+  },
+  {
+    name: 'Bleus',
+    key: 'Bleus',
+    label: 'Bleus',
+  },
+  {
+    name: 'Rouges',
+    key: 'Rouges',
+    label: 'Rouges',
+  },
+  {
+    name: 'Noires',
+    key: 'Noires',
+    label: 'Noires',
+  },
 ];
 
 class CardContainer extends Component {
@@ -31,8 +50,9 @@ class CardContainer extends Component {
               end:'',
               methode:'',
             },
-        }
+        },
         //isEnabled:  false
+        checkedItems: new Map(),
       };
   
       this.handleOriginChange = this.handleOriginChange.bind(this);
@@ -43,6 +63,7 @@ class CardContainer extends Component {
       this.callMamp  = this.callMamp.bind(this);
       this.buildUrl = this.buildUrl.bind(this);
       this.cards = this.cards.bind(this);
+      this.handleChangeCheckbox =this.handleChangeCheckbox.bind(this);
     }
 
     componentDidMount(){
@@ -64,6 +85,8 @@ class CardContainer extends Component {
 
     buildUrl(start,end, methode){
       let url = "http://localhost:8888/PTS_AB_GG_MGDB/jsonResult.php?"
+      //let checks = checkboxes.map(item => item = this.state.checkedItems.get(item));
+      //console.log(checks)
       if(start > 0 && start < 96) {
         url += 'start=' + start + '&';
       }
@@ -74,16 +97,13 @@ class CardContainer extends Component {
         if(methode === 'Dijkstra'){   
           url += 'methode=d';
         }
-        else if(methode === 'FordFerkuson'){
+        else if(methode === 'FordFulkerson'){
           url += 'methode=f';      
         }
         else {
           url += 'methode=b';
         }
       }
-      // if(restriction !== null){
-
-      // }
       return url;
     }
 
@@ -104,12 +124,8 @@ class CardContainer extends Component {
       console.log('url',url);
       console.log('json',jsonResult);
       const jsonReact1 = JSON.parse(jsonResult);
-      //jsonReact = JSON.parse(jsonReact);
-
-      const jsonReact = '{"0":{"ways":[2,3,4,5,71,68,73,69,54],"totalMinuteTime":115.55999999999999},"1":{"ways":[2,3,4,68,73,69,54],"totalMinuteTime":101.05999999999999},"2":{"ways":[2,3,73,32,31,69,54],"totalMinuteTime":87.98},"3":{"ways":[2,3,73,69,54],"totalMinuteTime":57.46000000000001},"4":{"ways":[2,37,32,31,69,54],"totalMinuteTime":81.72},"5":{"ways":[2,37,69,54],"totalMinuteTime":51.2},"6":{"ways":[6,1,2,3,73,69,54],"totalMinuteTime":89.26},"7":{"ways":[6,1,2,37,69,54],"totalMinuteTime":83},"8":{"ways":[6,36,54],"totalMinuteTime":33.38},"9":{"ways":[6,50,75,54],"totalMinuteTime":38.88},"description":"Chaque index numerote de l objet principal correspond a une possibilie de chemin a prendre pour aller du  point a au point b La liste de ways sont les chemins successif a prendre, totalMinuteTime est le nombre de minute pour relier le point a au point b via les chemins lists avant.","computeTimeInS":0.006906986236572266,"methode":"Brute Force","query":{"start":5,"end":10,"methode":"b"}}';
-      //const jsonReact = JSON.parse('{"0":{"ways":[17,93,5],"totalMinuteTime":28.1},"description":"L'index 0 de cette objet donne la suite de chemin a prendre pour aller du point a au point b le plus rapidement avec Dijkstra","computeTimeInS":0.012394905090332031,"methode":"Dijkstra","query":{"start":10,"end":1,"methode":"d"}}');
+      
       console.log('Jsonreact1',jsonReact1);
-      console.log('Jsonreact',jsonReact);
       return jsonReact1;
 
     }
@@ -129,16 +145,12 @@ class CardContainer extends Component {
 
     handleJourneyTypeChange(event) {
       this.setState({methode: event.target.value});
+      console.log(this.state)
     }
 
     handleSubmit(event) {
       event.preventDefault();
-      
-      console.log(this.state);
-  
-      for (const checkbox of this.selectedCheckboxes) {
-        console.log(checkbox, 'is selected.');
-      }
+
       const {start, end, methode} = this.state;
       const json = this.parseUrl(start,end,methode);
       if((start > 0 && start < 96) && (end > 0 && end < 96))
@@ -160,18 +172,11 @@ class CardContainer extends Component {
       }
     };
 
-    createCheckbox = label => (
-      <Checkbox
-              label={label}
-              handleCheckboxChange={this.toggleCheckbox}
-              key={label}
-          />
-    )
-
-    createCheckboxes = () => (
-      items.map(this.createCheckbox)
-    )
-  
+    handleChangeCheckbox(e) {
+      const item = e.target.name;
+      const isChecked = e.target.checked;
+      this.setState(prevState => ({ checkedItems: prevState.checkedItems.set(item, isChecked) }));
+    }
   
 
     render() {
@@ -181,7 +186,6 @@ class CardContainer extends Component {
         if(data && data[i])
           card.push(<Card data={data} index={i} start={start} end={end} methode={methode}/>)
       }
-
       return (
         <div className='App'>
           <header className='App-header'>
@@ -213,12 +217,22 @@ class CardContainer extends Component {
                 <select value={methode} onChange={this.handleJourneyTypeChange}>
                   <option value='BrutPower'>Tous chemins</option>
                   <option value='Dijkstra'>Le plus rapide</option>
-                  <option value='FordFerkuson'>Le plus court</option>
+                  <option value='FordFulkerson'>Le plus court</option>
                 </select>
               </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <label>
-                Restrictions : &nbsp;
-                  {this.createCheckboxes()}
+                Restrictions : &nbsp;  
+                <React.Fragment>
+                  {
+                    checkboxes.map(item => (
+                      <label key={item.key}>
+                        {item.name}
+                        
+                        <Checkbox name={item.name} checked={this.state.checkedItems.get(item.name)} onChange={this.handleChangeCheckbox } />
+                      </label> 
+                    )) 
+                  }
+                </React.Fragment>
               </label>&nbsp;&nbsp;&nbsp;&nbsp;
               <br/> 
               <br/>
@@ -234,7 +248,6 @@ class CardContainer extends Component {
         </div>
       );
     }
-  }
-  
+}  
   export default CardContainer;
   
